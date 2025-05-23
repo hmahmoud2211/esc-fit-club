@@ -16,9 +16,26 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 // Create Express app
 const app = express();
 
-// Middleware
+// CORS configuration - allow requests from frontend
+// In production, update this to your frontend URL
+const allowedOrigins = [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000',
+    // Add your production frontend URL when deployed
+    process.env.FRONTEND_URL
+].filter(Boolean); // Filter out undefined/null values
+
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -62,6 +79,15 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+    res.status(200).json({ 
+        message: 'ESC Fit Club API is running',
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err.stack);
@@ -73,33 +99,36 @@ app.use((err, req, res, next) => {
 
 // Function to start server with port retry
 const startServer = (port) => {
-    port = Number(port); // Ensure port is a number!
-    // Force port 5000 as requested by user
-    port = 5000;
+    port = Number(port || process.env.PORT || 5000); // Use environment variable or default to 5000
     
-    try {
-        // Try to close any existing server on port 5000
-        const http = require('http');
-        const server = http.createServer();
-        server.listen(port);
-        server.close();
-        
-        // Now start our app on port 5000
-        app.listen(port, () => {
-            console.log(`Server is running on port ${port}`);
-        }).on('error', (err) => {
-            console.error(`Error starting server on port ${port}:`, err.message);
-            console.log('Please close any other application using port 5000 and try again.');
-            process.exit(1);
-        });
-    } catch (err) {
-        console.error('Failed to start server:', err);
-        process.exit(1);
+    // In local development, check if port is available
+    if (process.env.NODE_ENV !== 'production') {
+        try {
+            const http = require('http');
+            const server = http.createServer();
+            server.listen(port);
+            server.close();
+        } catch (err) {
+            console.error(`Port ${port} is busy, trying another port...`);
+            return startServer(port + 1);
+        }
     }
+    
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    }).on('error', (err) => {
+        console.error(`Error starting server on port ${port}:`, err.message);
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('Trying another port...');
+            startServer(port + 1);
+        } else {
+            process.exit(1);
+        }
+    });
 };
 
 // Sync Sequelize models with the database
-sequelize.sync({ alter: true })
+sequelize.sync({ alter: process.env.NODE_ENV !== 'production' })
     .then(() => {
         // Start server with initial port
         const initialPort = Number(process.env.PORT) || 5000;
@@ -109,7 +138,5 @@ sequelize.sync({ alter: true })
         console.error('Failed to sync database:', err);
         process.exit(1);
     });
-
-// To ensure backend always runs on port 5001, set PORT=5001 in your .env file
 
 module.exports = { app, sequelize }; 
