@@ -1,0 +1,15 @@
+[build]
+  # Directory with the frontend build output
+  publish = "./"
+  # Command to build the frontend
+  command = "echo 'No build step needed for static files'"
+
+[[redirects]]
+  # For SPA routing - redirect all requests to index.html
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  # Environment variables for the build
+  NODE_VERSION = "16" 
