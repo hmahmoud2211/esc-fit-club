@@ -39,5 +39,5 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 
-# Package files
-package-lock.json 
+# Don't ignore package-lock.json to ensure consistent dependency installations
+# package-lock.json 
