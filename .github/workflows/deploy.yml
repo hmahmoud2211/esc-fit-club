@@ -2,7 +2,7 @@ name: Deploy ESC Fit Club
 
 on:
   push:
-    branches: [ main ]
+    branches: [ Master ]
 
 jobs:
   build-and-test:
