@@ -1,8 +1,3 @@
-// API configuration
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000/api'  // Local development
-    : 'https://esc-backend.onrender.com/api';  // Production backend URL - change this to your actual deployed backend URL
-
 // Shared state management
 const sharedState = {
     // User authentication state

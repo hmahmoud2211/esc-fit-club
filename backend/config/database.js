@@ -1,24 +1,21 @@
 const { Sequelize } = require('sequelize');
 
-// Database name - keep existing name
-const DB_NAME = process.env.MYSQL_DATABASE || 'so_web';
+const DB_NAME = 'so_web'; // Change this to your desired database name if needed
 console.log('Connecting to MySQL database:', DB_NAME);
 
-// Log environment variables
 console.log('MYSQL_DATABASE:', process.env.MYSQL_DATABASE);
 console.log('MYSQL_USER:', process.env.MYSQL_USER);
 console.log('MYSQL_PASSWORD:', process.env.MYSQL_PASSWORD);
 console.log('MYSQL_HOST:', process.env.MYSQL_HOST);
 console.log('MYSQL_DIALECT:', process.env.MYSQL_DIALECT);
 
-// Connect to the RDS database using environment variables with fallbacks
 const sequelize = new Sequelize(
-    DB_NAME,
-    process.env.MYSQL_USER || 'admin',
-    process.env.MYSQL_PASSWORD || 'ESCwear2025',
+    DB_NAME,         // database name
+    'root',           // username
+    'Hazem@2003',     // password
     {
-        host: process.env.MYSQL_HOST || 'esc.cp8w0220u9dr.eu-north-1.rds.amazonaws.com',
-        dialect: process.env.MYSQL_DIALECT || 'mysql',
+        host: 'localhost',
+        dialect: 'mysql',
         logging: false,
     }
 );

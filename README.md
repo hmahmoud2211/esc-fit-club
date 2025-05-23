@@ -1,72 +1,69 @@
-# ESC Fit Club Website
+# ESC Fit Club E-commerce Platform
 
-This is the codebase for the ESC Fit Club e-commerce website.
+A full-stack e-commerce web application for ESC Fit Club, featuring user authentication, product catalog, shopping cart, and order management.
 
-## Project Structure
+## Features
 
-- `frontend/` - Frontend React components and assets
-- `backend/` - Node.js/Express API server
-- Static HTML, CSS, and JavaScript files in the root directory
+- User authentication and account management
+- Product browsing and filtering by categories
+- Shopping cart functionality
+- Secure checkout process
+- Order history and tracking
+- Admin dashboard for product and order management
 
-## Deployment Instructions
+## Tech Stack
 
-### Frontend (Netlify)
+### Frontend
+- HTML5, CSS3, JavaScript
+- Bootstrap for responsive design
+- Fetch API for connecting to backend
 
-1. Create an account on [Netlify](https://www.netlify.com/)
-2. Connect your GitHub repository or drag-and-drop the frontend folder
-3. Configure the build settings:
-   - Build command: leave empty (for static site)
-   - Publish directory: `./`
+### Backend
+- Node.js with Express.js
+- MySQL database with Sequelize ORM
+- JWT for authentication
+- AWS RDS for database hosting
 
-### Backend (Render, Heroku, or AWS)
+## Installation
 
-The backend needs to be deployed separately as Netlify only supports static websites.
-
-#### Option 1: Render.com
-
-1. Create an account on [Render](https://render.com/)
-2. Create a new Web Service and connect your GitHub repository
-3. Configure the build settings:
-   - Build command: `npm install`
-   - Start command: `node server.js`
-4. Add environment variables:
-   ```
-   MYSQL_DATABASE=so_web
-   MYSQL_USER=admin
-   MYSQL_PASSWORD=ESCwear2025
-   MYSQL_HOST=esc.cp8w0220u9dr.eu-north-1.rds.amazonaws.com
-   MYSQL_DIALECT=mysql
-   JWT_SECRET=super_secret_key_12345
-   ```
-
-#### Option 2: AWS Elastic Beanstalk
-
-1. Create an AWS account if you don't have one
-2. Install the AWS CLI and EB CLI
-3. Initialize EB CLI in your project:
-   ```
-   cd backend
-   eb init
-   ```
-4. Create an environment:
-   ```
-   eb create so-web-backend
-   ```
-5. Set environment variables:
-   ```
-   eb setenv MYSQL_DATABASE=so_web MYSQL_USER=admin MYSQL_PASSWORD=ESCwear2025 MYSQL_HOST=esc.cp8w0220u9dr.eu-north-1.rds.amazonaws.com MYSQL_DIALECT=mysql JWT_SECRET=super_secret_key_12345
-   ```
-
-## Connecting Frontend to Backend
-
-After deploying the backend, update the API_BASE_URL in `shared.js` to point to your deployed backend URL:
-
-```javascript
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000/api'
-    : 'https://your-backend-url.com/api'; // Update this with your actual backend URL
+1. Clone the repository
+```
+git clone https://github.com/yourusername/esc-fit-club.git
+cd esc-fit-club
 ```
 
-## Database
+2. Install dependencies
+```
+npm install
+cd backend
+npm install
+```
 
-The application is configured to connect to an AWS RDS MySQL database. Make sure the database server allows connections from your deployed backend. 
+3. Set up environment variables
+Create a .env file in the backend directory with the following:
+```
+MYSQL_DATABASE=so_web
+MYSQL_USER=admin
+MYSQL_PASSWORD=your_password
+MYSQL_HOST=your_database_endpoint
+MYSQL_DIALECT=mysql
+JWT_SECRET=your_secret_key
+```
+
+4. Start the application
+```
+node start-servers.js
+```
+
+5. Access the website at http://localhost:3000
+
+## Deployment
+
+The application is configured for deployment with:
+- Frontend accessible through static file serving
+- Backend API running on Node.js
+- Database on AWS RDS
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
