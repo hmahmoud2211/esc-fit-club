@@ -1,0 +1,15 @@
+[build]
+  # Directory with the static HTML files
+  publish = "./"
+  # No build command as these are static HTML files
+  command = ""
+
+[[redirects]]
+  # For SPA routing, redirect all requests to index.html
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  # Environment variables for the build
+  NODE_VERSION = "16.14.0" 

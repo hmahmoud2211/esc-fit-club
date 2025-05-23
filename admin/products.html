@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - ESC Fit Club</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .product-image {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">ESC Fit Club</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Website Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Product Management</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                Add New Product
+            </button>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    <!-- Products will be loaded here -->
+                    <tr>
+                        <td colspan="7" class="text-center">Loading products...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="price" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="stock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Product Image</label>
+                            <input type="file" class="form-control" id="imageFile" accept="image/*">
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img src="" id="previewImg" style="max-width: 100%; max-height: 200px;" alt="Image preview">
+                                <button type="button" class="btn btn-sm btn-outline-danger mt-1" id="removeImage">Remove</button>
+                            </div>
+                            <small class="form-text text-muted">Upload your product image or leave empty to use automatic category-based images.</small>
+                            <input type="hidden" id="image" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="category" list="categoryOptions" required>
+                            <datalist id="categoryOptions">
+                                <option value="Apparel">
+                                <option value="Hijabs">
+                                <option value="Athleisure">
+                                <option value="Sets">
+                                <option value="Equipment">
+                                <option value="Supplements">
+                            </datalist>
+                            <small class="form-text text-muted">Choose from common categories or type a custom one.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveProduct">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check authentication and admin status
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+        let isAdmin = false;
+        
+        if (!token) {
+            window.location.href = '../login.html';
+        } else if (userData) {
+            // Parse user data and check if user is admin
+            try {
+                const user = JSON.parse(userData);
+                isAdmin = user.role === 'admin';
+                
+                // If user is not an admin, redirect to home page
+                if (!isAdmin) {
+                    alert('Access denied: Admin privileges required');
+                    window.location.href = '../index.html';
+                }
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                window.location.href = '../login.html';
+            }
+        } else {
+            // No user data found, redirect to login
+            window.location.href = '../login.html';
+        }
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        });
+
+        // Product management functions
+        let products = [];
+        let editingProductId = null;
+
+        async function loadProducts() {
+            try {
+                // Show loading message
+                const tbody = document.getElementById('productsTableBody');
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">Loading products...</td></tr>';
+                
+                // Log the request details for debugging
+                console.log('Fetching products with token:', token ? 'Token exists' : 'No token');
+                
+                const response = await fetch('http://localhost:5000/api/products', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(e => ({ message: 'Unknown error' }));
+                    throw new Error(errorData.message || `Server returned ${response.status}`);
+                }
+                
+                products = await response.json();
+                console.log('Products loaded:', products);
+                displayProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showAlert(`Error loading products: ${error.message}`, 'danger');
+                
+                // Still update the UI to show the error
+                const tbody = document.getElementById('productsTableBody');
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Failed to load products: ${error.message}</td></tr>`;
+            }
+        }
+
+        function displayProducts() {
+            const tbody = document.getElementById('productsTableBody');
+            
+            if (!products || products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No products found. Click "Add New Product" or "Create Sample Product" to add one.
+                        </td>
+                    </tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = products.map(product => {
+                // Handle missing product properties safely
+                const id = product.id || product._id || 'unknown';
+                const name = product.name || 'Unnamed Product';
+                const description = product.description || 'No description';
+                const price = product.price || 0;
+                const stock = product.stock ?? 0;
+                const category = product.category || 'Uncategorized';
+                
+                // Use local images based on category
+                let imageUrl;
+                const categoryLower = category.toLowerCase();
+                
+                if (categoryLower === 'apparel' || categoryLower.includes('shirt')) {
+                    imageUrl = '../So_photos/Card_1.jpg';
+                } else if (categoryLower.includes('hijab')) {
+                    imageUrl = '../So_photos/Card_2.jpg';
+                } else if (categoryLower.includes('athleisure') || categoryLower.includes('set')) {
+                    imageUrl = '../So_photos/Card_3.jpg';
+                } else if (categoryLower.includes('training') || categoryLower.includes('workout')) {
+                    imageUrl = '../So_photos/Card_4.jpg';
+                } else if (categoryLower.includes('protein') || categoryLower.includes('supplement')) {
+                    imageUrl = '../So_photos/Card_5.jpg';
+                } else if (categoryLower.includes('equipment') || categoryLower.includes('resistance')) {
+                    imageUrl = '../So_photos/Card_6.jpg';
+                } else {
+                    // Fallback to a default image based on product ID
+                    const idNum = typeof id === 'string' ? id.charCodeAt(0) : parseInt(id);
+                    const imageIndex = (idNum % 6) + 1;
+                    imageUrl = `../So_photos/Card_${imageIndex}.jpg`;
+                }
+                
+                // Check if product has an uploaded image and use it instead
+                if (product.images && product.images.length > 0 && product.images[0]) {
+                    // If it starts with data: or http, it's a valid image URL
+                    if (product.images[0].startsWith('data:') || product.images[0].startsWith('http')) {
+                        imageUrl = product.images[0];
+                    }
+                }
+                
+                console.log(`Product: ${name}, Category: ${category}, Using image: ${imageUrl.substring(0, 30)}...`);
+                
+                return `
+                <tr>
+                    <td><img src="${imageUrl}" class="product-image" alt="${name}" 
+                         onerror="this.src='https://via.placeholder.com/150?text=${encodeURIComponent(name)}'; console.log('Failed to load image:', this.src);"></td>
+                    <td>${name}</td>
+                    <td>${description.substring(0, 50)}${description.length > 50 ? '...' : ''}</td>
+                    <td>$${price}</td>
+                    <td>${stock}</td>
+                    <td>${category}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-warning btn-sm" onclick="editProduct('${id}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${id}')">Delete</button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            // Auto-hide alert after 5 seconds
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    alert.classList.remove('show');
+                }
+            }, 5000);
+        }
+
+        async function saveProduct() {
+            try {
+                // Basic validation
+                const name = document.getElementById('name').value.trim();
+                if (!name) {
+                    showAlert('Product name is required', 'warning');
+                    return;
+                }
+                
+                const price = parseFloat(document.getElementById('price').value);
+                if (isNaN(price) || price < 0) {
+                    showAlert('Price must be a valid positive number', 'warning');
+                    return;
+                }
+                
+                const stock = parseInt(document.getElementById('stock').value);
+                if (isNaN(stock) || stock < 0) {
+                    showAlert('Stock must be a valid positive number', 'warning');
+                    return;
+                }
+                
+                const description = document.getElementById('description').value.trim();
+                if (!description) {
+                    showAlert('Product description is required', 'warning');
+                    return;
+                }
+                
+                const category = document.getElementById('category').value.trim();
+                if (!category) {
+                    showAlert('Product category is required', 'warning');
+                    return;
+                }
+                
+                // Get the image data from the hidden input (which stores the base64 data)
+                const imageUrl = document.getElementById('image').value;
+                
+                const productData = {
+                    name,
+                    description,
+                    price,
+                    stock,
+                    category,
+                    // Only include images if it's a valid URL or a small base64 string
+                    // Exclude very large base64 strings that might cause issues
+                    images: []
+                };
+                
+                // Add image only if it's a URL or a reasonably sized base64 string
+                if (imageUrl) {
+                    if (imageUrl.startsWith('http') || (imageUrl.startsWith('data:') && imageUrl.length < 500000)) {
+                        productData.images = [imageUrl];
+                    } else {
+                        console.log('Image too large or invalid format - using category-based images instead');
+                    }
+                }
+
+                // Show saving indicator
+                const saveButton = document.getElementById('saveProduct');
+                const originalText = saveButton.textContent;
+                saveButton.disabled = true;
+                saveButton.textContent = 'Saving...';
+                
+                // Prepare request
+                const url = editingProductId 
+                    ? `http://localhost:5000/api/products/${editingProductId}`
+                    : 'http://localhost:5000/api/products';
+                
+                const method = editingProductId ? 'PUT' : 'POST';
+
+                console.log('Sending product data:', {...productData, images: productData.images.length > 0 ? ['[Image data included]'] : []});
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(productData)
+                });
+
+                // Restore button state
+                saveButton.disabled = false;
+                saveButton.textContent = originalText;
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(e => ({ message: 'Unknown error' }));
+                    console.error('Server returned error:', errorData);
+                    throw new Error(errorData.message || `Server returned ${response.status}`);
+                }
+
+                const savedProduct = await response.json();
+                showAlert(`Product ${editingProductId ? 'updated' : 'created'} successfully`, 'success');
+                console.log('Saved product:', savedProduct);
+                
+                bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+                loadProducts();
+                resetForm();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                
+                // Try again without the image if there's an error
+                if (document.getElementById('image').value && !error.message.includes('without image')) {
+                    showAlert('Trying to save product without image...', 'warning');
+                    
+                    // Clear the image and try again
+                    document.getElementById('image').value = '';
+                    document.getElementById('imagePreview').style.display = 'none';
+                    
+                    // Add a flag to prevent infinite retry loop
+                    error.message += ' (without image)';
+                    saveProduct();
+                    return;
+                }
+                
+                showAlert(`Failed to save product: ${error.message}`, 'danger');
+            }
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => String(p.id) === String(id) || String(p._id) === String(id));
+            if (product) {
+                editingProductId = id;
+                document.getElementById('name').value = product.name || '';
+                document.getElementById('description').value = product.description || '';
+                document.getElementById('price').value = product.price || 0;
+                document.getElementById('stock').value = product.stock || 0;
+                document.getElementById('imageFile').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+               
+                // Check if product has images and set the preview
+                if (product.images && product.images.length > 0 && product.images[0]) {
+                    // If the image is a URL or base64 string, show it in the preview
+                    const imageUrl = product.images[0];
+                    if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
+                        document.getElementById('previewImg').src = imageUrl;
+                        document.getElementById('imagePreview').style.display = 'block';
+                        document.getElementById('image').value = imageUrl;
+                    }
+                }
+               
+                document.getElementById('category').value = product.category || '';
+                document.getElementById('modalTitle').textContent = 'Edit Product';
+                new bootstrap.Modal(document.getElementById('productModal')).show();
+            } else {
+                showAlert(`Product with ID ${id} not found`, 'warning');
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(e => ({ message: 'Unknown error' }));
+                        throw new Error(errorData.message || `Server returned ${response.status}`);
+                    }
+
+                    showAlert('Product deleted successfully', 'success');
+                    loadProducts();
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    showAlert(`Failed to delete product: ${error.message}`, 'danger');
+                }
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('productForm').reset();
+            editingProductId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Product';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        // Event Listeners
+        document.getElementById('saveProduct').addEventListener('click', saveProduct);
+        document.getElementById('productModal').addEventListener('hidden.bs.modal', resetForm);
+
+        // Image upload preview functionality
+        document.getElementById('imageFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size
+                if (file.size > 2 * 1024 * 1024) {
+                    showAlert('Image size must be less than 2MB. Please select a smaller image.', 'warning');
+                    this.value = '';
+                    return;
+                }
+                
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    showAlert('Please select an image file (jpg, png, etc).', 'warning');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Create image element to check dimensions
+                    const img = new Image();
+                    img.onload = function() {
+                        // Show the preview
+                        document.getElementById('previewImg').src = event.target.result;
+                        document.getElementById('imagePreview').style.display = 'block';
+                        // Store the base64 image data in the hidden input
+                        document.getElementById('image').value = event.target.result;
+                        
+                        console.log('Image loaded successfully:', file.name, file.type, file.size, 'bytes');
+                    };
+                    img.onerror = function() {
+                        showAlert('Invalid image file. Please select another image.', 'warning');
+                        document.getElementById('imageFile').value = '';
+                    };
+                    img.src = event.target.result;
+                };
+                reader.onerror = function() {
+                    showAlert('Error reading file. Please try again.', 'warning');
+                    document.getElementById('imageFile').value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Remove image button
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'removeImage') {
+                document.getElementById('imageFile').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('image').value = '';
+            }
+        });
+
+        // For testing, create a sample product if none exist
+        function createSampleProduct() {
+            const sampleProduct = {
+                name: "ESC Fitness T-Shirt",
+                description: "High-quality workout t-shirt for maximum comfort and performance",
+                price: 29.99,
+                stock: 50,
+                images: ["https://via.placeholder.com/150?text=ESC+Tshirt"],
+                category: "Apparel"
+            };
+            
+            fetch('http://localhost:5000/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(sampleProduct)
+            })
+            .then(response => {
+                if (!response.ok) return response.json().then(err => Promise.reject(err));
+                return response.json();
+            })
+            .then(data => {
+                showAlert('Sample product created successfully', 'success');
+                loadProducts();
+            })
+            .catch(error => {
+                console.error('Error creating sample product:', error);
+                showAlert(`Failed to create sample product: ${error.message || 'Unknown error'}`, 'danger');
+            });
+        }
+        
+        // Add this button to the UI
+        document.querySelector('.d-flex.justify-content-between.align-items-center.mb-4').innerHTML += `
+            <button class="btn btn-outline-secondary ms-2" onclick="createSampleProduct()">
+                Create Sample Product
+            </button>
+        `;
+
+        // Initial load
+        loadProducts();
+    </script>
+</body>
+</html> 

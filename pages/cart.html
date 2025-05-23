@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - ESC Fit Club</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/ESC.svg" alt="ESC Logo">
+                    <span class="logo-text">ESC</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/pages/collections.html">Collections</a></li>
+                <li><a href="/pages/about.html">About</a></li>
+                <li><a href="/pages/contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="/pages/cart.html" class="cart-btn active">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="/pages/login.html" class="login-btn">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="cart-page">
+        <div class="cart-container">
+            <h1>Shopping Cart</h1>
+            
+            <div class="cart-content">
+                <div class="cart-items">
+                    <!-- Cart items will be dynamically inserted here -->
+                    <div class="empty-cart-message" style="display: none;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                        <a href="/pages/collections.html" class="continue-shopping">Continue Shopping</a>
+                    </div>
+                </div>
+
+                <div class="cart-summary">
+                    <h2>Order Summary</h2>
+                    <div class="summary-item">
+                        <span>Subtotal</span>
+                        <span class="cart-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Tax (10%)</span>
+                        <span class="cart-tax">$0.00</span>
+                    </div>
+                    <div class="promo-code">
+                        <input type="text" placeholder="Enter promo code">
+                        <button>Apply</button>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span class="cart-total">$0.00</span>
+                    </div>
+                    <button class="checkout-btn">
+                        <i class="fas fa-lock"></i>
+                        Secure Checkout
+                    </button>
+                    <div class="secure-checkout">
+                        <i class="fas fa-shield-alt"></i>
+                        <p>Secure Checkout</p>
+                        <div class="payment-icons">
+                            <i class="fab fa-cc-visa"></i>
+                            <i class="fab fa-cc-mastercard"></i>
+                            <i class="fab fa-cc-amex"></i>
+                            <i class="fab fa-cc-paypal"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ESC Fit Club</h3>
+                <p>Modest sportswear for the modern woman</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/pages/collections.html">Shop</a></li>
+                    <li><a href="/pages/about.html">About Us</a></li>
+                    <li><a href="/pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@escfitclub.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ESC Fit Club. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/shared.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            sharedState.init();
+            renderCart();
+        });
+
+        function renderCart() {
+            const cartItemsContainer = document.querySelector('.cart-items');
+            const emptyCartMessage = document.querySelector('.empty-cart-message');
+            
+            if (sharedState.cart.length === 0) {
+                emptyCartMessage.style.display = 'flex';
+                return;
+            }
+
+            emptyCartMessage.style.display = 'none';
+            cartItemsContainer.innerHTML = sharedState.cart.map(item => `
+                <div class="cart-item" data-id="${item.id}">
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="item-details">
+                        <h3>${item.name}</h3>
+                        <p class="item-meta">Color: ${item.color} | Size: ${item.size}</p>
+                        <p class="item-price">$${item.price.toFixed(2)}</p>
+                        <div class="item-quantity">
+                            <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                        </div>
+                    </div>
+                    <button class="remove-item" onclick="removeItem(${item.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            updateOrderSummary();
+        }
+
+        function updateOrderSummary() {
+            const subtotal = sharedState.getCartTotal();
+            const tax = subtotal * 0.1;
+            const total = subtotal + tax;
+
+            document.querySelector('.cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.querySelector('.cart-tax').textContent = `$${tax.toFixed(2)}`;
+            document.querySelector('.cart-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function updateQuantity(itemId, newQuantity) {
+            sharedState.updateQuantity(itemId, newQuantity);
+            renderCart();
+        }
+
+        function removeItem(itemId) {
+            sharedState.removeFromCart(itemId);
+            renderCart();
+        }
+    </script>
+</body>
+</html> 

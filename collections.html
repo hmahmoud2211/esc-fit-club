@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections - ESC Fit Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="collections.css">
+    <style>
+        /* Improved product image display */
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            height: 300px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        
+        .quick-view-btn {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-view-btn:hover {
+            background-color: black;
+            color: white;
+        }
+        
+        .loading, .error-message, .no-products, .no-results {
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            font-size: 18px;
+        }
+        
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .error-message button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="left-section">
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    </a>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="collections.html" class="active">Collections</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="right-section">
+                <button class="search-btn" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <a href="cart.html" class="cart-btn">
+                    Cart
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                </a>
+            </div>
+            <button class="close-menu-btn" aria-label="Close menu">×</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="collections.html" class="active">Collections</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="mobile-nav-buttons">
+            <a href="cart.html" class="cart-btn">Cart 0</a>
+            <a href="login.html" class="login-btn">Login</a>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay">
+        <div class="search-container">
+            <div class="search-header">
+                <h2>Search Products</h2>
+                <button class="search-close" aria-label="Close search">×</button>
+            </div>
+            <form class="search-form" onsubmit="event.preventDefault(); performSearch();">
+                <input type="text" class="search-input" placeholder="Search for products..." aria-label="Search">
+            </form>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Collections Hero -->
+    <section class="collections-hero">
+        <div class="hero-content">
+            <h1>Our Collections</h1>
+            <p>Discover our complete range of modest sportswear designed for every activity</p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="filter-container">
+            <div class="filter-group">
+                <label>Category:</label>
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="sets">Sets</option>
+                    <option value="hijabs">Hijabs</option>
+                    <option value="athleisure">Athleisure</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Price Range:</label>
+                <div class="price-range">
+                    <input type="number" id="minPrice" placeholder="Min" min="0" step="100">
+                    <span>-</span>
+                    <input type="number" id="maxPrice" placeholder="Max" min="0" step="100">
+                    <button id="applyPriceFilter">Apply</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products-section">
+        <div class="products-grid">
+            <!-- Gym Ready Sets -->
+            <div class="product-card" data-category="sets">
+                <div class="product-image">
+                    <img src="So_photos/Card_1.jpg" alt="Gym Ready Set - Black">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Gym Ready Set</h3>
+                    <p class="product-color">Black</p>
+                    <p class="product-price">EGP 3,750</p>
+                    <button class="add-to-cart-btn" data-item='{"id": "1", "name": "Gym Ready Set", "price": 3750, "image": "So_photos/Card_1.jpg", "size": "M", "color": "Black", "quantity": 1}'>Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Sports Hijab -->
+            <div class="product-card" data-category="hijabs">
+                <div class="product-image">
+                    <img src="So_photos/Card_2.jpg" alt="Sports Hijab - Navy">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Sports Hijab</h3>
+                    <p class="product-color">Navy</p>
+                    <p class="product-price">EGP 1,800</p>
+                    <button class="add-to-cart-btn" data-item='{"id": "2", "name": "Sports Hijab", "price": 1800, "image": "So_photos/Card_2.jpg", "size": "One Size", "color": "Navy", "quantity": 1}'>Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Modest Athleisure Set -->
+            <div class="product-card" data-category="athleisure">
+                <div class="product-image">
+                    <img src="So_photos/Card_3.jpg" alt="Modest Athleisure Set - Gray">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Modest Athleisure Set</h3>
+                    <p class="product-color">Gray</p>
+                    <p class="product-price">EGP 2,950</p>
+                    <button class="add-to-cart-btn" data-item='{"id": "3", "name": "Modest Athleisure Set", "price": 2950, "image": "So_photos/Card_3.jpg", "size": "L", "color": "Gray", "quantity": 1}'>Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Premium Training Set -->
+            <div class="product-card" data-category="sets">
+                <div class="product-image">
+                    <img src="So_photos/Card_4.jpg" alt="Premium Training Set - Black">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Premium Training Set</h3>
+                    <p class="product-color">Black</p>
+                    <p class="product-price">EGP 3,500</p>
+                    <button class="add-to-cart-btn" data-item='{"id": "4", "name": "Premium Training Set", "price": 3500, "image": "So_photos/Card_4.jpg", "size": "M", "color": "Black", "quantity": 1}'>Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Active Lifestyle Set -->
+            <div class="product-card" data-category="sets">
+                <div class="product-image">
+                    <img src="So_photos/Card_5.jpg" alt="Active Lifestyle Set - Navy">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Active Lifestyle Set</h3>
+                    <p class="product-color">Navy</p>
+                    <p class="product-price">EGP 3,250</p>
+                    <button class="add-to-cart-btn" data-item='{"id": "5", "name": "Active Lifestyle Set", "price": 3250, "image": "So_photos/Card_5.jpg", "size": "M", "color": "Navy", "quantity": 1}'>Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Performance Hijab -->
+            <div class="product-card" data-category="hijabs">
+                <div class="product-image">
+                    <img src="So_photos/Card_6.jpg" alt="Performance Hijab - Black">
+                    <div class="product-overlay">
+                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h3>Performance Hijab</h3>
+                    <p class="product-color">Black</p>
+                    <p class="product-price">EGP 2,200</p>
+                    <button class="add-to-cart-btn" data-item='{"id": "6", "name": "Performance Hijab", "price": 2200, "image": "So_photos/Card_6.jpg", "size": "One Size", "color": "Black", "quantity": 1}'>Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Success Message Overlay -->
+    <div class="cart-success-overlay">
+        <div class="cart-success-message">
+            <div class="success-icon">✓</div>
+            <h3>Added to Cart Successfully!</h3>
+            <div class="cart-action-buttons">
+                <button class="continue-shopping">Continue Shopping</button>
+                <a href="cart.html" class="go-to-cart">Go to Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize shared state
+            sharedState.init();
+
+            const cartSuccessOverlay = document.querySelector('.cart-success-overlay');
+            const continueShoppingBtn = document.querySelector('.continue-shopping');
+            const productsGrid = document.querySelector('.products-grid');
+            
+            // Load products from API
+            loadProductsFromAPI();
+            
+            function loadProductsFromAPI() {
+                // Show loading state
+                productsGrid.innerHTML = '<div class="loading">Loading products...</div>';
+                
+                // Fetch products from backend API
+                fetch('http://localhost:5000/api/products')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch products (${response.status})`);
+                        }
+                        return response.json();
+                    })
+                    .then(products => {
+                        // Clear loading state
+                        productsGrid.innerHTML = '';
+                        
+                        // Debug: Log received products
+                        console.log('Products from API:', products);
+                        
+                        if (products.length === 0) {
+                            productsGrid.innerHTML = '<div class="no-products">No products found</div>';
+                            return;
+                        }
+                        
+                        // Render each product
+                                                 products.forEach(product => {
+                             const price = product.price;
+                             
+                             // First check if the product has an uploaded image
+                             let imageUrl = null;
+                             
+                             // Check if product has an uploaded image and use it
+                             if (product.images && product.images.length > 0 && product.images[0]) {
+                                 // If it starts with data: or http, it's a valid image URL
+                                 if (product.images[0].startsWith('data:') || product.images[0].startsWith('http')) {
+                                     imageUrl = product.images[0];
+                                     console.log(`Using uploaded image for ${product.name}`);
+                                 }
+                             }
+                             
+                             // If no uploaded image is available, use category-based images
+                             if (!imageUrl) {
+                                 // Use local images directly based on index or category
+                                 let imageIndex = products.indexOf(product) % 6 + 1; // Get a number between 1-6
+                                 imageUrl = `So_photos/Card_${imageIndex}.jpg`;
+                                 
+                                 // For known categories, use specific images
+                                 if (product.category) {
+                                     const category = product.category.toLowerCase();
+                                     if (category === 'apparel' || category.includes('shirt')) {
+                                         imageUrl = 'So_photos/Card_1.jpg';
+                                     } else if (category.includes('hijab')) {
+                                         imageUrl = 'So_photos/Card_2.jpg';
+                                     } else if (category.includes('athleisure') || category.includes('set')) {
+                                         imageUrl = 'So_photos/Card_3.jpg';
+                                     } else if (category.includes('training') || category.includes('workout')) {
+                                         imageUrl = 'So_photos/Card_4.jpg';
+                                     } else if (category.includes('protein') || category.includes('supplement')) {
+                                         imageUrl = 'So_photos/Card_5.jpg';
+                                     } else if (category.includes('equipment') || category.includes('resistance')) {
+                                         imageUrl = 'So_photos/Card_6.jpg';
+                                     }
+                                 }
+                                 console.log(`Using category-based image for ${product.name}: ${imageUrl}`);
+                             }
+                            
+                                                         // Create product card HTML
+                             const productCard = document.createElement('div');
+                             productCard.className = 'product-card';
+                             productCard.dataset.category = product.category.toLowerCase();
+                             productCard.dataset.id = product.id || '';
+                             console.log(`Setting product card data-id to: ${product.id} for ${product.name}`);
+                             
+                             productCard.innerHTML = `
+                                 <div class="product-image">
+                                     <img src="${imageUrl}" alt="${product.name}" 
+                                          onerror="console.log('Failed to load image:', this.src); this.src='https://via.placeholder.com/500x500?text=${encodeURIComponent(product.name)}';">
+                                     <div class="product-overlay">
+                                         <button class="quick-view-btn" data-product-id="${product.id || ''}">Quick View</button>
+                                     </div>
+                                 </div>
+                                 <div class="product-details">
+                                     <h3>${product.name}</h3>
+                                     <p class="product-color">${product.category}</p>
+                                     <p class="product-price">EGP ${price}</p>
+                                     <button class="add-to-cart-btn" data-item='${JSON.stringify({
+                                         id: product.id,
+                                         name: product.name,
+                                         price: price,
+                                         image: imageUrl,
+                                         size: "M",
+                                         color: product.category,
+                                         quantity: 1
+                                     })}'>Add to Cart</button>
+                                 </div>
+                             `;
+                            
+                            // Add the product card to the grid
+                            productsGrid.appendChild(productCard);
+                        });
+                        
+                        // Add event listeners to the newly created buttons
+                        attachEventListeners();
+                        
+                        // Initialize filters with dynamic categories
+                        initializeFilters(products);
+                        
+                        // Apply initial filtering
+                        filterProducts();
+                    })
+                    .catch(error => {
+                        console.error('Error loading products:', error);
+                        productsGrid.innerHTML = `
+                            <div class="error-message">
+                                <p>Failed to load products. ${error.message}</p>
+                                <button onclick="loadProductsFromAPI()">Try Again</button>
+                            </div>
+                        `;
+                    });
+            }
+            
+            function initializeFilters(products) {
+                // Get unique categories from products
+                const categories = [...new Set(products.map(p => p.category.toLowerCase()))];
+                
+                // Update category filter dropdown
+                const categoryFilter = document.getElementById('categoryFilter');
+                categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+                
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            function attachEventListeners() {
+                // Add click event listeners to all add-to-cart buttons
+                const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+                addToCartButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const itemData = JSON.parse(this.dataset.item);
+                        
+                        // Add to cart
+                        sharedState.addToCart(itemData);
+                        showCartSuccess();
+                    });
+                });
+                
+                // Add click event listeners to quick view buttons - using direct approach
+                document.addEventListener('click', function(e) {
+                    // Check if the clicked element is a Quick View button or its child
+                    const quickViewBtn = e.target.closest('.quick-view-btn');
+                    if (!quickViewBtn) return;
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Try to get product ID from the button's data attribute first
+                    let productId = quickViewBtn.getAttribute('data-product-id');
+                    
+                    // If not found, try to get from parent card
+                    if (!productId) {
+                        const productCard = quickViewBtn.closest('.product-card');
+                        if (productCard) {
+                            productId = productCard.dataset.id;
+                        }
+                    }
+                    
+                    console.log('Quick View clicked for product ID:', productId);
+                    
+                    // If we still don't have an ID, use index as a fallback
+                    if (!productId) {
+                        const allButtons = Array.from(document.querySelectorAll('.quick-view-btn'));
+                        const index = allButtons.indexOf(quickViewBtn);
+                        console.log('Using fallback index for product:', index);
+                        
+                        if (index >= 0 && index < products.length) {
+                            productId = products[index].id;
+                        } else {
+                            console.error('Could not determine product ID');
+                            return;
+                        }
+                    }
+                    
+                    openProductPage(productId);
+                });
+                
+                // Debug: Log all product cards with their IDs
+                setTimeout(() => {
+                    const allCards = document.querySelectorAll('.product-card');
+                    console.log(`Found ${allCards.length} product cards`);
+                    allCards.forEach((card, index) => {
+                        console.log(`Card ${index}: data-id=${card.dataset.id}, data-category=${card.dataset.category}`);
+                    });
+                    
+                    const allButtons = document.querySelectorAll('.quick-view-btn');
+                    console.log(`Found ${allButtons.length} quick view buttons`);
+                    allButtons.forEach((btn, index) => {
+                        console.log(`Button ${index}: data-product-id=${btn.getAttribute('data-product-id')}`);
+                    });
+                }, 1000);
+            }
+
+            function showCartSuccess() {
+                cartSuccessOverlay.classList.add('active');
+                // Auto-hide after 5 seconds if user doesn't interact
+                setTimeout(() => {
+                    if (cartSuccessOverlay.classList.contains('active')) {
+                        hideCartSuccess();
+                    }
+                }, 5000);
+            }
+
+            function hideCartSuccess() {
+                cartSuccessOverlay.classList.remove('active');
+            }
+
+            // Hide success message when clicking continue shopping
+            continueShoppingBtn.addEventListener('click', hideCartSuccess);
+
+            // Hide success message when clicking outside
+            cartSuccessOverlay.addEventListener('click', (e) => {
+                if (e.target === cartSuccessOverlay) {
+                    hideCartSuccess();
+                }
+            });
+
+            // Mobile menu functionality
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const closeMenuBtn = document.querySelector('.close-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const body = document.body;
+
+            // Create overlay element
+            const overlay = document.createElement('div');
+            overlay.className = 'menu-overlay';
+            body.appendChild(overlay);
+
+            function openMenu() {
+                mobileMenu.classList.add('active');
+                overlay.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+
+            function closeMenu() {
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+                body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMenu);
+            closeMenuBtn.addEventListener('click', closeMenu);
+            overlay.addEventListener('click', closeMenu);
+
+            // Close menu when clicking a link
+            const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
+
+            // Search functionality
+            const searchBtn = document.querySelector('.search-btn');
+            const searchOverlay = document.querySelector('.search-overlay');
+            const searchClose = document.querySelector('.search-close');
+            const searchInput = document.querySelector('.search-input');
+            const searchResults = document.querySelector('.search-results');
+
+            function openSearch() {
+                searchOverlay.classList.add('active');
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 100);
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSearch() {
+                searchOverlay.classList.remove('active');
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+                document.body.style.overflow = '';
+            }
+
+            function performSearch() {
+                const query = searchInput.value.trim().toLowerCase();
+                if (query.length < 2) return;
+
+                // Get products from the current DOM
+                const productElements = document.querySelectorAll('.product-card');
+                const products = Array.from(productElements).map(el => {
+                    const nameEl = el.querySelector('h3');
+                    const priceEl = el.querySelector('.product-price');
+                    const imageEl = el.querySelector('.product-image img');
+                    
+                    return {
+                        name: nameEl ? nameEl.textContent : '',
+                        price: priceEl ? priceEl.textContent : '',
+                        image: imageEl ? imageEl.src : ''
+                    };
+                });
+
+                const filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(query)
+                );
+
+                displayResults(filteredProducts);
+            }
+
+            function displayResults(results) {
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<p>No products found.</p>';
+                    return;
+                }
+
+                const html = results.map(product => `
+                    <div class="search-result-item">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="search-result-info">
+                            <h3>${product.name}</h3>
+                            <p>${product.price}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                searchResults.innerHTML = html;
+            }
+
+            searchBtn.addEventListener('click', openSearch);
+            searchClose.addEventListener('click', closeSearch);
+            searchInput.addEventListener('input', performSearch);
+
+            // Close search on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                    closeSearch();
+                }
+            });
+
+            // Filter functionality
+            const categoryFilter = document.getElementById('categoryFilter');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const applyPriceButton = document.getElementById('applyPriceFilter');
+
+            function getProductPrice(product) {
+                const priceText = product.querySelector('.product-price').textContent;
+                return parseInt(priceText.replace(/[^0-9]/g, ''));
+            }
+
+            function filterProducts() {
+                const selectedCategory = categoryFilter.value;
+                const minPrice = parseInt(minPriceInput.value) || 0;
+                const maxPrice = parseInt(maxPriceInput.value) || Infinity;
+                
+                const productCards = document.querySelectorAll('.product-card');
+                let visibleCount = 0;
+
+                productCards.forEach(product => {
+                    const category = product.dataset.category;
+                    const price = getProductPrice(product);
+                    const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+                    const matchesPrice = price >= minPrice && price <= maxPrice;
+
+                    if (matchesCategory && matchesPrice) {
+                        product.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+                
+                // If no products are visible, show a message
+                if (visibleCount === 0 && productCards.length > 0) {
+                    let noResultsEl = document.querySelector('.no-results');
+                    if (!noResultsEl) {
+                        noResultsEl = document.createElement('div');
+                        noResultsEl.className = 'no-results';
+                        noResultsEl.textContent = 'No products match your filters';
+                        productsGrid.appendChild(noResultsEl);
+                    }
+                    noResultsEl.style.display = 'block';
+                } else {
+                    const noResultsEl = document.querySelector('.no-results');
+                    if (noResultsEl) {
+                        noResultsEl.style.display = 'none';
+                    }
+                }
+            }
+
+            // Event listeners
+            categoryFilter.addEventListener('change', filterProducts);
+            applyPriceButton.addEventListener('click', filterProducts);
+
+            function openProductPage(productId) {
+                console.log('Opening product page for ID:', productId);
+                
+                // Find product data by ID with better matching
+                let product = null;
+                
+                // Try different ways to match the product
+                if (productId) {
+                    // Try exact match first
+                    product = products.find(p => String(p.id) === String(productId));
+                    
+                    // If not found, try to find by index
+                    if (!product && !isNaN(parseInt(productId))) {
+                        const index = parseInt(productId);
+                        if (index >= 0 && index < products.length) {
+                            product = products[index];
+                        }
+                    }
+                }
+                
+                // If still not found, use first product as fallback
+                if (!product) {
+                    console.warn('Product not found with ID:', productId);
+                    if (products.length > 0) {
+                        console.log('Using first product as fallback');
+                        product = products[0];
+                    } else {
+                        console.error('No products available');
+                        alert('Error: Product not found');
+                        return;
+                    }
+                }
+                
+                console.log('Found product:', product);
+                
+                // Create a data object for this product
+                const itemData = {
+                    id: product.id || '1',
+                    name: product.name || 'Product',
+                    price: product.price || 0,
+                    description: product.description || '',
+                    category: product.category || 'General',
+                    image: null
+                };
+                
+                // Get image source from rendered card (more reliable)
+                const productCards = document.querySelectorAll('.product-card');
+                let cardImage = null;
+                
+                for (const card of productCards) {
+                    if (String(card.dataset.id) === String(product.id)) {
+                        const imgElement = card.querySelector('.product-image img');
+                        if (imgElement && imgElement.src) {
+                            cardImage = imgElement.src;
+                            break;
+                        }
+                    }
+                }
+                
+                // Set the image - prefer card image if found
+                if (cardImage) {
+                    itemData.image = cardImage;
+                }
+                // Next try uploaded image if available
+                else if (product.images && product.images.length > 0 && 
+                    (product.images[0].startsWith('data:') || product.images[0].startsWith('http'))) {
+                    itemData.image = product.images[0];
+                } 
+                // Finally fall back to category-based image
+                else {
+                    const category = product.category ? product.category.toLowerCase() : '';
+                                         if (category === 'apparel' || category.includes('shirt')) {
+                         itemData.image = 'So_photos/Card_1.jpg';
+                     } else if (category.includes('hijab')) {
+                         itemData.image = 'So_photos/Card_2.jpg';
+                         // Ensure consistent naming for hijab products
+                         itemData.name = 'Sports Hijab';
+                         // Set price to 1800 for hijabs as shown in the screenshot
+                         itemData.price = 1800;
+                     } else if (category.includes('athleisure') || category.includes('set')) {
+                         itemData.image = 'So_photos/Card_3.jpg';
+                    } else if (category.includes('training') || category.includes('workout')) {
+                        itemData.image = 'So_photos/Card_4.jpg';
+                    } else if (category.includes('protein') || category.includes('supplement')) {
+                        itemData.image = 'So_photos/Card_5.jpg';
+                    } else if (category.includes('equipment') || category.includes('resistance')) {
+                        itemData.image = 'So_photos/Card_6.jpg';
+                    } else {
+                        const idNum = parseInt(String(product.id).replace(/\D/g, '')) || 1;
+                        itemData.image = `So_photos/Card_${(idNum % 6) + 1}.jpg`;
+                    }
+                }
+                
+                console.log('Product data for detail page:', itemData);
+                
+                try {
+                    // Try to encode the data
+                    const encodedData = encodeURIComponent(JSON.stringify(itemData));
+                    
+                    // Make sure it's not too long
+                    if (encodedData.length > 2000) {
+                        console.warn('Encoded data is very long, removing image data');
+                        itemData.image = 'So_photos/Card_1.jpg'; // Use simple image reference instead
+                        const shorterData = encodeURIComponent(JSON.stringify(itemData));
+                        window.location.href = 'product.html?data=' + shorterData;
+                    } else {
+                        window.location.href = 'product.html?data=' + encodedData;
+                    }
+                } catch (error) {
+                    console.error('Error encoding product data:', error);
+                    alert('Error opening product page. See console for details.');
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

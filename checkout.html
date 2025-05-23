@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ESC Fit Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .checkout-section {
+            padding: 100px 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        .checkout-form {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        .form-title {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #000;
+            outline: none;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .order-summary {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            position: sticky;
+            top: 120px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+        .order-summary-title {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .order-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 1rem;
+        }
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .item-details {
+            flex: 1;
+        }
+        .item-name {
+            font-weight: 500;
+            margin: 0 0 0.25rem;
+        }
+        .item-price {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .item-meta {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .order-totals {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        .order-total-row.final {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        .place-order-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .place-order-btn:hover {
+            background: #333;
+        }
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .payment-method {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .payment-method.selected {
+            border-color: #000;
+            background-color: #f9f9f9;
+        }
+        .payment-method img {
+            height: 30px;
+            margin-bottom: 0.5rem;
+        }
+        .auth-required {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        .auth-required h2 {
+            margin-bottom: 1rem;
+        }
+        .same-shipping-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .same-shipping-label input {
+            margin-right: 0.5rem;
+            width: auto;
+        }
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .order-summary {
+                position: static;
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="left-section">
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    </a>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="collections.html">Collections</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="right-section">
+                <button class="search-btn" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <a href="cart.html" class="cart-btn">
+                    Cart
+                </a>
+                <a href="login.html" class="login-btn">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                </a>
+            </div>
+            <button class="close-menu-btn" aria-label="Close menu">×</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="mobile-nav-buttons">
+            <a href="cart.html" class="cart-btn">Cart 0</a>
+            <a href="login.html" class="login-btn">Login</a>
+        </div>
+    </div>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <h1>Checkout</h1>
+        
+        <div id="auth-content">
+            <div class="checkout-container">
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <form id="checkout-form">
+                        <!-- Shipping Information -->
+                        <div class="form-section">
+                            <h2 class="form-title">Shipping Information</h2>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="first-name">First Name</label>
+                                    <input type="text" id="first-name" name="first-name" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="last-name">Last Name</label>
+                                    <input type="text" id="last-name" name="last-name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="address">Street Address</label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="apartment">Apartment, Suite, etc. (optional)</label>
+                                <input type="text" id="apartment" name="apartment">
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" name="city" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="state">State/Governorate</label>
+                                    <input type="text" id="state" name="state" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="zip">Postal/ZIP Code</label>
+                                    <input type="text" id="zip" name="zip" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="country">Country</label>
+                                    <select id="country" name="country" required>
+                                        <option value="">Select Country</option>
+                                        <option value="EG" selected>Egypt</option>
+                                        <option value="US">United States</option>
+                                        <option value="UK">United Kingdom</option>
+                                        <option value="CA">Canada</option>
+                                        <option value="AU">Australia</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Billing Information -->
+                        <div class="form-section">
+                            <h2 class="form-title">Billing Information</h2>
+                            
+                            <div class="form-group">
+                                <label class="same-shipping-label">
+                                    <input type="checkbox" id="same-as-shipping" name="same-as-shipping" checked>
+                                    Same as shipping address
+                                </label>
+                            </div>
+                            
+                            <div id="billing-address-form" style="display: none;">
+                                <!-- Billing address fields will be shown when checkbox is unchecked -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="billing-first-name">First Name</label>
+                                        <input type="text" id="billing-first-name" name="billing-first-name">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="billing-last-name">Last Name</label>
+                                        <input type="text" id="billing-last-name" name="billing-last-name">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="billing-address">Street Address</label>
+                                    <input type="text" id="billing-address" name="billing-address">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="billing-apartment">Apartment, Suite, etc. (optional)</label>
+                                    <input type="text" id="billing-apartment" name="billing-apartment">
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="billing-city">City</label>
+                                        <input type="text" id="billing-city" name="billing-city">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="billing-state">State/Governorate</label>
+                                        <input type="text" id="billing-state" name="billing-state">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="billing-zip">Postal/ZIP Code</label>
+                                        <input type="text" id="billing-zip" name="billing-zip">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="billing-country">Country</label>
+                                        <select id="billing-country" name="billing-country">
+                                            <option value="">Select Country</option>
+                                            <option value="EG" selected>Egypt</option>
+                                            <option value="US">United States</option>
+                                            <option value="UK">United Kingdom</option>
+                                            <option value="CA">Canada</option>
+                                            <option value="AU">Australia</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Method -->
+                        <div class="form-section">
+                            <h2 class="form-title">Payment Method</h2>
+                            
+                            <div class="payment-methods">
+                                <div class="payment-method selected" data-method="credit-card">
+                                    <img src="https://cdn-icons-png.flaticon.com/128/179/179457.png" alt="Credit Card">
+                                    <div>Credit Card</div>
+                                </div>
+                                
+                                <div class="payment-method" data-method="paypal">
+                                    <img src="https://cdn-icons-png.flaticon.com/128/196/196566.png" alt="PayPal">
+                                    <div>PayPal</div>
+                                </div>
+                                
+                                <div class="payment-method" data-method="cash">
+                                    <img src="https://cdn-icons-png.flaticon.com/128/2933/2933116.png" alt="Cash on Delivery">
+                                    <div>Cash on Delivery</div>
+                                </div>
+                            </div>
+                            
+                            <div id="credit-card-form">
+                                <div class="form-group">
+                                    <label for="card-number">Card Number</label>
+                                    <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456">
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="expiry-date">Expiry Date</label>
+                                        <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="cvv">Security Code (CVV)</label>
+                                        <input type="text" id="cvv" name="cvv" placeholder="123">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="card-name">Name on Card</label>
+                                    <input type="text" id="card-name" name="card-name">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="place-order-btn">Place Order</button>
+                    </form>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2 class="order-summary-title">Order Summary</h2>
+                    
+                    <div id="checkout-items">
+                        <!-- Will be populated with cart items -->
+                    </div>
+                    
+                    <div class="order-totals">
+                        <div class="order-total-row">
+                            <span>Subtotal</span>
+                            <span id="checkout-subtotal">EGP 0.00</span>
+                        </div>
+                        
+                        <div class="order-total-row">
+                            <span>Shipping</span>
+                            <span id="checkout-shipping">EGP 50.00</span>
+                        </div>
+                        
+                        <div class="order-total-row">
+                            <span>Tax (10%)</span>
+                            <span id="checkout-tax">EGP 0.00</span>
+                        </div>
+                        
+                        <div class="order-total-row final">
+                            <span>Total</span>
+                            <span id="checkout-total">EGP 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="auth-required" class="auth-required" style="display: none;">
+            <h2>Please login to complete your checkout</h2>
+            <a href="login.html" class="btn primary">Login Now</a>
+        </div>
+    </section>
+
+    <script src="shared.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is authenticated, redirect to login if not
+            if (!sharedState.isAuthenticated) {
+                // Save current page to redirect back after login
+                localStorage.setItem('loginRedirect', window.location.pathname);
+                // Redirect to login page
+                window.location.href = 'login.html?checkout=true';
+                return;
+            }
+            
+            // Show checkout content (only runs if authenticated)
+            document.getElementById('auth-content').style.display = 'block';
+            document.getElementById('auth-required').style.display = 'none';
+            
+            // Fill user information if available
+            const user = sharedState.user;
+            if (user) {
+                document.getElementById('first-name').value = user.name?.split(' ')[0] || '';
+                document.getElementById('last-name').value = user.name?.split(' ').slice(1).join(' ') || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('phone').value = user.phone || '';
+            }
+            
+            // Handle billing address toggle
+            const sameAsShipping = document.getElementById('same-as-shipping');
+            const billingAddressForm = document.getElementById('billing-address-form');
+            
+            sameAsShipping.addEventListener('change', () => {
+                billingAddressForm.style.display = sameAsShipping.checked ? 'none' : 'block';
+            });
+            
+            // Handle payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const creditCardForm = document.getElementById('credit-card-form');
+            
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    // Remove selected class from all methods
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    
+                    // Add selected class to clicked method
+                    method.classList.add('selected');
+                    
+                    // Show/hide credit card form based on selected method
+                    if (method.dataset.method === 'credit-card') {
+                        creditCardForm.style.display = 'block';
+                    } else {
+                        creditCardForm.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Populate order summary
+            updateOrderSummary();
+            
+            // Handle form submission
+            const checkoutForm = document.getElementById('checkout-form');
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // In a real application, you would send the form data to your server
+                // For demo purposes, show a success message
+                alert('Order placed successfully! Thank you for your purchase.');
+                
+                // Clear cart and redirect to confirmation page
+                sharedState.clearCartItems();
+                window.location.href = 'index.html';
+            });
+            
+            // Handle mobile menu
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const closeMenuBtn = document.querySelector('.close-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+            });
+            
+            closeMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+            
+            // Handle search overlay
+            const searchBtn = document.querySelector('.search-btn');
+            const searchOverlay = document.querySelector('.search-overlay');
+            const searchClose = document.querySelector('.search-close');
+            
+            if (searchBtn && searchOverlay && searchClose) {
+                searchBtn.addEventListener('click', () => {
+                    searchOverlay.classList.add('active');
+                });
+                
+                searchClose.addEventListener('click', () => {
+                    searchOverlay.classList.remove('active');
+                });
+            }
+        });
+        
+        // Update order summary from cart
+        function updateOrderSummary() {
+            const checkoutItems = document.getElementById('checkout-items');
+            const subtotalEl = document.getElementById('checkout-subtotal');
+            const taxEl = document.getElementById('checkout-tax');
+            const totalEl = document.getElementById('checkout-total');
+            
+            // Get cart from shared state
+            const cart = sharedState.getCart();
+            
+            // Clear current items
+            checkoutItems.innerHTML = '';
+            
+            // Add each item to the summary
+            cart.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'order-item';
+                itemEl.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="item-details">
+                        <h3 class="item-name">${item.name}</h3>
+                        <div class="item-price">EGP ${item.price.toFixed(2)}</div>
+                        <div class="item-meta">
+                            Size: ${item.size}, Color: ${item.color}, Quantity: ${item.quantity}
+                        </div>
+                    </div>
+                `;
+                checkoutItems.appendChild(itemEl);
+            });
+            
+            // Calculate totals
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = cart.length > 0 ? 50 : 0;
+            const tax = subtotal * 0.1;
+            const total = subtotal + shipping + tax;
+            
+            // Update total elements
+            subtotalEl.textContent = `EGP ${subtotal.toFixed(2)}`;
+            taxEl.textContent = `EGP ${tax.toFixed(2)}`;
+            totalEl.textContent = `EGP ${total.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html> 

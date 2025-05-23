@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - ESC Fit Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        .profile-section {
+            padding: 100px 2rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .profile-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 2rem;
+            font-size: 2rem;
+            color: #666;
+        }
+        .profile-info h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.8rem;
+        }
+        .profile-email {
+            color: #666;
+            font-size: 1rem;
+        }
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+        .profile-navigation {
+            border-right: 1px solid #eee;
+        }
+        .profile-nav-item {
+            padding: 1rem 0;
+            display: block;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .profile-nav-item:hover, .profile-nav-item.active {
+            color: #000;
+        }
+        .profile-details {
+            padding: 0 1rem;
+        }
+        .profile-form-group {
+            margin-bottom: 1.5rem;
+        }
+        .profile-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .profile-form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .profile-form-group input:focus {
+            border-color: #000;
+            outline: none;
+        }
+        .profile-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .profile-save-btn {
+            background: #000;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .profile-save-btn:hover {
+            background: #333;
+        }
+        .auth-required {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        .auth-required h2 {
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            .profile-navigation {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+            }
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="left-section">
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    </a>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="collections.html">Collections</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="right-section">
+                <button class="search-btn" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <a href="cart.html" class="cart-btn">
+                    Cart
+                </a>
+                <a href="login.html" class="login-btn">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                </a>
+            </div>
+            <button class="close-menu-btn" aria-label="Close menu">×</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="mobile-nav-buttons">
+            <a href="cart.html" class="cart-btn">Cart 0</a>
+            <a href="login.html" class="login-btn">Login</a>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay">
+        <div class="search-container">
+            <div class="search-header">
+                <h2>Search Products</h2>
+                <button class="search-close" aria-label="Close search">×</button>
+            </div>
+            <form class="search-form" onsubmit="event.preventDefault(); performSearch();">
+                <input type="text" class="search-input" placeholder="Search for products..." aria-label="Search">
+            </form>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+        <div class="profile-container">
+            <div id="auth-content">
+                <!-- This content will be shown when authenticated -->
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span id="profile-initial"></span>
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="profile-name"></h1>
+                        <div class="profile-email" id="profile-email"></div>
+                    </div>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-navigation">
+                        <a href="#" class="profile-nav-item active">Personal Information</a>
+                        <a href="orders.html" class="profile-nav-item">Orders History</a>
+                        <a href="#" class="profile-nav-item">Addresses</a>
+                        <a href="#" class="profile-nav-item">Payment Methods</a>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <h2>Personal Information</h2>
+                        <form id="profile-form">
+                            <div class="profile-form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" name="name">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" disabled>
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <div class="profile-form-actions">
+                                <button type="submit" class="profile-save-btn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="auth-required" class="auth-required" style="display: none;">
+                <h2>Please login to view your profile</h2>
+                <a href="login.html" class="btn primary">Login Now</a>
+            </div>
+        </div>
+    </section>
+
+    <script src="shared.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle search functionality
+            const searchBtn = document.querySelector('.search-btn');
+            const searchOverlay = document.querySelector('.search-overlay');
+            const searchClose = document.querySelector('.search-close');
+            
+            searchBtn.addEventListener('click', () => {
+                searchOverlay.classList.add('active');
+            });
+            
+            searchClose.addEventListener('click', () => {
+                searchOverlay.classList.remove('active');
+            });
+            
+            // Mobile menu functionality
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const closeMenuBtn = document.querySelector('.close-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+            });
+            
+            closeMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+            
+            // Check if user is authenticated
+            if (sharedState.isAuthenticated) {
+                // Show profile content
+                document.getElementById('auth-content').style.display = 'block';
+                document.getElementById('auth-required').style.display = 'none';
+                
+                // Fill profile data
+                const user = sharedState.user;
+                document.getElementById('profile-name').textContent = user.name || 'User';
+                document.getElementById('profile-email').textContent = user.email || '';
+                document.getElementById('profile-initial').textContent = (user.name || 'U')[0].toUpperCase();
+                
+                // Fill form fields
+                document.getElementById('name').value = user.name || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('phone').value = user.phone || '';
+                
+                // Handle form submission
+                document.getElementById('profile-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const updatedUser = {
+                        ...user,
+                        name: document.getElementById('name').value,
+                        phone: document.getElementById('phone').value
+                    };
+                    
+                    // Update user data in localStorage
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    sharedState.user = updatedUser;
+                    
+                    // Update profile display
+                    document.getElementById('profile-name').textContent = updatedUser.name;
+                    document.getElementById('profile-initial').textContent = updatedUser.name[0].toUpperCase();
+                    
+                    // Show success notification
+                    alert('Profile updated successfully!');
+                });
+            } else {
+                // Show login required message
+                document.getElementById('auth-content').style.display = 'none';
+                document.getElementById('auth-required').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

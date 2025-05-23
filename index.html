@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESC Fit Club - Sportswear</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="left-section">
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    </a>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="collections.html">Collections</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="chatbot.html">Chatbot</a></li>
+            </ul>
+            <div class="right-section">
+                <button class="search-btn" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <a href="cart.html" class="cart-btn">
+                    Cart
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                </a>
+            </div>
+            <button class="close-menu-btn" aria-label="Close menu">×</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="chatbot.html">Chatbot</a></li>
+        </ul>
+        <div class="mobile-nav-buttons">
+            <a href="cart.html" class="cart-btn">Cart 0</a>
+            <a href="login.html" class="login-btn">Login</a>
+        </div>
+    </div>
+
+    <!-- ESC Logo Animation Screen -->
+    <div class="animation-screen" id="animationScreen">
+        <div class="logo-container">
+            <img src="Logo-removebg-preview.png" alt="ESC Wear Logo" class="esc-logo-animation">
+        </div>
+        <div class="slogan-text">
+            <span class="slogan-word slogan-word-1">Reset</span>
+            <span class="slogan-word slogan-word-2">Run</span>
+            <span class="slogan-word slogan-word-3">Rule!</span>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay">
+        <div class="search-container">
+            <div class="search-header">
+                <h2>Search Products</h2>
+                <button class="search-close" aria-label="Close search">×</button>
+            </div>
+            <form class="search-form" onsubmit="event.preventDefault(); performSearch();">
+                <input type="text" class="search-input" placeholder="Search for products..." aria-label="Search">
+            </form>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <span class="label">New Collection Available</span>
+                <h1>Edgy, Sporty & Comfy Modest Sportswear</h1>
+                <p>Discover modest sportswear designed for confidence, comfort, and style that adapts to your active lifestyle.</p>
+                <div class="cta-buttons">
+                    <a href="collections.html" class="btn primary">Shop Collection <span class="arrow">→</span></a>
+                    <a href="login.html" class="btn secondary">Join Community</a>
+                </div>
+            </div>
+            
+           
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter-section">
+            <div class="newsletter-content">
+                <h2 class="newsletter-title">Join Our Community</h2>
+                <p class="newsletter-description">Subscribe to get special offers, free giveaways, and updates about our new collections.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <input type="email" class="email-input" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Featured Collections -->
+        <section class="collections-section">
+            <h2 class="section-title">Featured Collections</h2>
+            <div class="collections-grid">
+                <div class="collection-card">
+                    <div class="card-image">
+                        <img src="So_photos/so1.jpg" alt="Gym Ready Set">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Gym Ready Set</h3>
+                        <p class="card-description">Perfect for your workout sessions. Comfortable and modest.</p>
+                        <button class="card-btn" onclick="addToCart({
+                            id: '1',
+                            name: 'Gym Ready Set',
+                            price: 1800,
+                            image: 'So_photos/so1.jpg',
+                            size: 'M',
+                            color: 'Black',
+                            quantity: 1
+                        })">Add to Cart - 1800 EGP</button>
+                    </div>
+                </div>
+                <div class="collection-card">
+                    <div class="card-image">
+                        <img src="So_photos/so2.jpg" alt="Sports Hijab">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Sports Hijab</h3>
+                        <p class="card-description">Stay cool and covered during your workouts.</p>
+                        <button class="card-btn" onclick="addToCart({
+                            id: '2',
+                            name: 'Sports Hijab',
+                            price: 2000,
+                            image: 'So_photos/so2.jpg',
+                            size: 'One Size',
+                            color: 'Navy',
+                            quantity: 1
+                        })">Add to Cart - 2000 EGP</button>
+                    </div>
+                </div>
+                <div class="collection-card">
+                    <div class="card-image">
+                        <img src="So_photos/So3.jpg" alt="Modest Athleisure Set">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Modest Athleisure Set</h3>
+                        <p class="card-description">Stylish and comfortable for everyday activities.</p>
+                        <button class="card-btn" onclick="addToCart({
+                            id: '3',
+                            name: 'Modest Athleisure Set',
+                            price: 2100,
+                            image: 'So_photos/So3.jpg',
+                            size: 'L',
+                            color: 'Gray',
+                            quantity: 1
+                        })">Add to Cart - 2100 EGP</button>
+                    </div>
+                </div>
+                <div class="collection-card">
+                    <div class="card-image">
+                        <img src="So_photos/So4.jpg" alt="Premium Training Set">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Premium Training Set</h3>
+                        <p class="card-description">Elite performance wear for serious athletes.</p>
+                        <button class="card-btn" onclick="addToCart({
+                            id: '4',
+                            name: 'Premium Training Set',
+                            price: 2300,
+                            image: 'So_photos/So4.jpg',
+                            size: 'M',
+                            color: 'Black',
+                            quantity: 1
+                        })">Add to Cart - 2300 EGP</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="shared.js"></script>
+    <script>
+        // Add to cart function
+        function addToCart(item) {
+            sharedState.addToCart(item);
+        }
+
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const closeMenuBtn = document.querySelector('.close-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const body = document.body;
+
+            // Create overlay element
+            const overlay = document.createElement('div');
+            overlay.className = 'menu-overlay';
+            body.appendChild(overlay);
+
+            function openMenu() {
+                mobileMenu.classList.add('active');
+                overlay.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+
+            function closeMenu() {
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+                body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMenu);
+            closeMenuBtn.addEventListener('click', closeMenu);
+            overlay.addEventListener('click', closeMenu);
+
+            // Close menu when clicking a link
+            const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
+        });
+
+        // Search functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchBtn = document.querySelector('.search-btn');
+            const searchOverlay = document.querySelector('.search-overlay');
+            const searchClose = document.querySelector('.search-close');
+            const searchInput = document.querySelector('.search-input');
+            const searchResults = document.querySelector('.search-results');
+
+            function openSearch() {
+                searchOverlay.classList.add('active');
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 100);
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSearch() {
+                searchOverlay.classList.remove('active');
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+                document.body.style.overflow = '';
+            }
+
+            function performSearch() {
+                const query = searchInput.value.trim().toLowerCase();
+                if (query.length < 2) return;
+
+                // Example products data - you would typically fetch this from your backend
+                const products = [
+                    { name: 'Gym Ready Set', price: '$89.99', image: 'So_photos/so1.jpg' },
+                    { name: 'Sports Hijab', price: '$39.99', image: 'So_photos/so2.jpg' },
+                    { name: 'Modest Athleisure Set', price: '$99.99', image: 'So_photos/So3.jpg' },
+                    { name: 'Premium Training Set', price: '$129.99', image: 'So_photos/So4.jpg' }
+                ];
+
+                const filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(query)
+                );
+
+                displayResults(filteredProducts);
+            }
+
+            function displayResults(results) {
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<p>No products found.</p>';
+                    return;
+                }
+
+                const html = results.map(product => `
+                    <div class="search-result-item">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="search-result-info">
+                            <h3>${product.name}</h3>
+                            <p>${product.price}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                searchResults.innerHTML = html;
+            }
+
+            searchBtn.addEventListener('click', openSearch);
+            searchClose.addEventListener('click', closeSearch);
+            searchInput.addEventListener('input', performSearch);
+
+            // Close search on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                    closeSearch();
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const animationScreen = document.getElementById('animationScreen');
+            const mainContent = document.getElementById('mainContent');
+
+            // Check if we're navigating from within the site (not refresh or direct access)
+            const isInternalNavigation = document.referrer.includes(window.location.host) && 
+                                       !performance.getEntriesByType('navigation')
+                                        .some(nav => nav.type === 'reload');
+
+            if (isInternalNavigation) {
+                // Skip animation if navigating internally
+                animationScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+            } else {
+                // Show animation on refresh, reopen, or direct access
+                animationScreen.style.display = 'flex';
+                mainContent.style.display = 'none';
+                
+                // Hide animation after it completes
+                setTimeout(() => {
+                    animationScreen.style.opacity = '0';
+                    mainContent.style.display = 'block';
+                    setTimeout(() => {
+                        animationScreen.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html> 

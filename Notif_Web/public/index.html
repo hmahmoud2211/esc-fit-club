@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESC Fit Club - Modest Sportswear</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/ESC.svg" alt="ESC Logo">
+                    <span class="logo-text">ESC</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/pages/collections.html">Collections</a></li>
+                <li><a href="/pages/about.html">About</a></li>
+                <li><a href="/pages/contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="/pages/cart.html" class="cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="/pages/login.html" class="login-btn">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Modest Sportswear for Active Women</h1>
+                <p>Discover our collection of comfortable and stylish modest activewear</p>
+                <a href="/pages/collections.html" class="cta-button">Shop Now</a>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="featured-products">
+            <h2>Featured Products</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <img src="/images/So_photos/Card_1.jpg" alt="Sports Modest Set - Black">
+                    <h3>Sports Modest Set - Black</h3>
+                    <p class="price">$59.99</p>
+                    <button onclick="addToCart({
+                        id: 1,
+                        name: 'Sports Modest Set - Black',
+                        price: 59.99,
+                        image: '/images/So_photos/Card_1.jpg',
+                        quantity: 1,
+                        color: 'Black',
+                        size: 'M'
+                    })">Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <img src="/images/So_photos/Card_2.jpg" alt="Active Wear Collection">
+                    <h3>Active Wear Collection</h3>
+                    <p class="price">$79.99</p>
+                    <button onclick="addToCart({
+                        id: 2,
+                        name: 'Active Wear Collection',
+                        price: 79.99,
+                        image: '/images/So_photos/Card_2.jpg',
+                        quantity: 1,
+                        color: 'Blue',
+                        size: 'S'
+                    })">Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <img src="/images/So_photos/Card_3.jpg" alt="Premium Sports Hijab">
+                    <h3>Premium Sports Hijab</h3>
+                    <p class="price">$45.99</p>
+                    <button onclick="addToCart({
+                        id: 3,
+                        name: 'Premium Sports Hijab',
+                        price: 45.99,
+                        image: '/images/So_photos/Card_3.jpg',
+                        quantity: 1,
+                        color: 'Gray',
+                        size: 'One Size'
+                    })">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ESC Fit Club</h3>
+                <p>Modest sportswear for the modern woman</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/pages/collections.html">Shop</a></li>
+                    <li><a href="/pages/about.html">About Us</a></li>
+                    <li><a href="/pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@escfitclub.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ESC Fit Club. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/shared.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            sharedState.init();
+        });
+    </script>
+</body>
+</html> 
