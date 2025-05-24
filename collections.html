@@ -108,7 +108,7 @@
                 </button>
                 <div class="logo">
                     <a href="index.html">
-                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                        <img src="New logo/sohyla ESC.png" alt="ESC Wear Logo" class="header-logo">
                     </a>
                 </div>
             </div>
@@ -137,7 +137,7 @@
         <div class="mobile-menu-header">
             <div class="logo">
                 <a href="index.html">
-                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    <img src="ESC.png" alt="ESC Wear Logo">
                 </a>
             </div>
             <button class="close-menu-btn" aria-label="Close menu">×</button>
@@ -204,11 +204,11 @@
     <section class="products-section">
         <div class="products-grid">
             <!-- Gym Ready Sets -->
-            <div class="product-card" data-category="sets">
+            <div class="product-card" data-category="sets" data-id="1">
                 <div class="product-image">
                     <img src="So_photos/Card_1.jpg" alt="Gym Ready Set - Black">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                        <button class="quick-view-btn" data-product-id="1">Quick View</button>
                     </div>
                 </div>
                 <div class="product-details">
@@ -220,11 +220,11 @@
             </div>
 
             <!-- Sports Hijab -->
-            <div class="product-card" data-category="hijabs">
+            <div class="product-card" data-category="hijabs" data-id="2">
                 <div class="product-image">
                     <img src="So_photos/Card_2.jpg" alt="Sports Hijab - Navy">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                        <button class="quick-view-btn" data-product-id="2">Quick View</button>
                     </div>
                 </div>
                 <div class="product-details">
@@ -236,11 +236,11 @@
             </div>
 
             <!-- Modest Athleisure Set -->
-            <div class="product-card" data-category="athleisure">
+            <div class="product-card" data-category="athleisure" data-id="3">
                 <div class="product-image">
                     <img src="So_photos/Card_3.jpg" alt="Modest Athleisure Set - Gray">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                        <button class="quick-view-btn" data-product-id="3">Quick View</button>
                     </div>
                 </div>
                 <div class="product-details">
@@ -252,11 +252,11 @@
             </div>
 
             <!-- Premium Training Set -->
-            <div class="product-card" data-category="sets">
+            <div class="product-card" data-category="sets" data-id="4">
                 <div class="product-image">
                     <img src="So_photos/Card_4.jpg" alt="Premium Training Set - Black">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                        <button class="quick-view-btn" data-product-id="4">Quick View</button>
                     </div>
                 </div>
                 <div class="product-details">
@@ -268,11 +268,11 @@
             </div>
 
             <!-- Active Lifestyle Set -->
-            <div class="product-card" data-category="sets">
+            <div class="product-card" data-category="sets" data-id="5">
                 <div class="product-image">
                     <img src="So_photos/Card_5.jpg" alt="Active Lifestyle Set - Navy">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                        <button class="quick-view-btn" data-product-id="5">Quick View</button>
                     </div>
                 </div>
                 <div class="product-details">
@@ -284,11 +284,11 @@
             </div>
 
             <!-- Performance Hijab -->
-            <div class="product-card" data-category="hijabs">
+            <div class="product-card" data-category="hijabs" data-id="6">
                 <div class="product-image">
                     <img src="So_photos/Card_6.jpg" alt="Performance Hijab - Black">
                     <div class="product-overlay">
-                        <button class="quick-view-btn" onclick="openProductPage(this)">Quick View</button>
+                        <button class="quick-view-btn" data-product-id="6">Quick View</button>
                     </div>
                 </div>
                 <div class="product-details">
@@ -323,6 +323,9 @@
             const continueShoppingBtn = document.querySelector('.continue-shopping');
             const productsGrid = document.querySelector('.products-grid');
             
+            // Store products globally so they're accessible to all functions
+            let products = [];
+            
             // Load products from API
             loadProductsFromAPI();
             
@@ -338,7 +341,10 @@
                         }
                         return response.json();
                     })
-                    .then(products => {
+                    .then(data => {
+                        // Store products globally
+                        products = data;
+                        
                         // Clear loading state
                         productsGrid.innerHTML = '';
                         
@@ -351,77 +357,77 @@
                         }
                         
                         // Render each product
-                                                 products.forEach(product => {
-                             const price = product.price;
-                             
-                             // First check if the product has an uploaded image
-                             let imageUrl = null;
-                             
-                             // Check if product has an uploaded image and use it
-                             if (product.images && product.images.length > 0 && product.images[0]) {
-                                 // If it starts with data: or http, it's a valid image URL
-                                 if (product.images[0].startsWith('data:') || product.images[0].startsWith('http')) {
-                                     imageUrl = product.images[0];
-                                     console.log(`Using uploaded image for ${product.name}`);
-                                 }
-                             }
-                             
-                             // If no uploaded image is available, use category-based images
-                             if (!imageUrl) {
-                                 // Use local images directly based on index or category
-                                 let imageIndex = products.indexOf(product) % 6 + 1; // Get a number between 1-6
-                                 imageUrl = `So_photos/Card_${imageIndex}.jpg`;
-                                 
-                                 // For known categories, use specific images
-                                 if (product.category) {
-                                     const category = product.category.toLowerCase();
-                                     if (category === 'apparel' || category.includes('shirt')) {
-                                         imageUrl = 'So_photos/Card_1.jpg';
-                                     } else if (category.includes('hijab')) {
-                                         imageUrl = 'So_photos/Card_2.jpg';
-                                     } else if (category.includes('athleisure') || category.includes('set')) {
-                                         imageUrl = 'So_photos/Card_3.jpg';
-                                     } else if (category.includes('training') || category.includes('workout')) {
-                                         imageUrl = 'So_photos/Card_4.jpg';
-                                     } else if (category.includes('protein') || category.includes('supplement')) {
-                                         imageUrl = 'So_photos/Card_5.jpg';
-                                     } else if (category.includes('equipment') || category.includes('resistance')) {
-                                         imageUrl = 'So_photos/Card_6.jpg';
-                                     }
-                                 }
-                                 console.log(`Using category-based image for ${product.name}: ${imageUrl}`);
-                             }
+                        products.forEach(product => {
+                            const price = product.price;
                             
-                                                         // Create product card HTML
-                             const productCard = document.createElement('div');
-                             productCard.className = 'product-card';
-                             productCard.dataset.category = product.category.toLowerCase();
-                             productCard.dataset.id = product.id || '';
-                             console.log(`Setting product card data-id to: ${product.id} for ${product.name}`);
-                             
-                             productCard.innerHTML = `
-                                 <div class="product-image">
-                                     <img src="${imageUrl}" alt="${product.name}" 
-                                          onerror="console.log('Failed to load image:', this.src); this.src='https://via.placeholder.com/500x500?text=${encodeURIComponent(product.name)}';">
-                                     <div class="product-overlay">
-                                         <button class="quick-view-btn" data-product-id="${product.id || ''}">Quick View</button>
-                                     </div>
-                                 </div>
-                                 <div class="product-details">
-                                     <h3>${product.name}</h3>
-                                     <p class="product-color">${product.category}</p>
-                                     <p class="product-price">EGP ${price}</p>
-                                     <button class="add-to-cart-btn" data-item='${JSON.stringify({
-                                         id: product.id,
-                                         name: product.name,
-                                         price: price,
-                                         image: imageUrl,
-                                         size: "M",
-                                         color: product.category,
-                                         quantity: 1
-                                     })}'>Add to Cart</button>
-                                 </div>
-                             `;
+                            // First check if the product has an uploaded image
+                            let imageUrl = null;
+                            
+                            // Check if product has an uploaded image and use it
+                            if (product.images && product.images.length > 0 && product.images[0]) {
+                                // If it starts with data: or http, it's a valid image URL
+                                if (product.images[0].startsWith('data:') || product.images[0].startsWith('http')) {
+                                    imageUrl = product.images[0];
+                                    console.log(`Using uploaded image for ${product.name}`);
+                                }
+                            }
+                            
+                            // If no uploaded image is available, use category-based images
+                            if (!imageUrl) {
+                                // Use local images directly based on index or category
+                                let imageIndex = products.indexOf(product) % 6 + 1; // Get a number between 1-6
+                                imageUrl = `So_photos/Card_${imageIndex}.jpg`;
+                                
+                                // For known categories, use specific images
+                                if (product.category) {
+                                    const category = product.category.toLowerCase();
+                                    if (category === 'apparel' || category.includes('shirt')) {
+                                        imageUrl = 'So_photos/Card_1.jpg';
+                                    } else if (category.includes('hijab')) {
+                                        imageUrl = 'So_photos/Card_2.jpg';
+                                    } else if (category.includes('athleisure') || category.includes('set')) {
+                                        imageUrl = 'So_photos/Card_3.jpg';
+                                    } else if (category.includes('training') || category.includes('workout')) {
+                                        imageUrl = 'So_photos/Card_4.jpg';
+                                    } else if (category.includes('protein') || category.includes('supplement')) {
+                                        imageUrl = 'So_photos/Card_5.jpg';
+                                    } else if (category.includes('equipment') || category.includes('resistance')) {
+                                        imageUrl = 'So_photos/Card_6.jpg';
+                                    }
+                                }
+                                console.log(`Using category-based image for ${product.name}: ${imageUrl}`);
+                            }
+                           
+                            // Create product card HTML
+                            const productCard = document.createElement('div');
+                            productCard.className = 'product-card';
+                            productCard.dataset.category = product.category.toLowerCase();
+                            productCard.dataset.id = product.id || '';
+                            console.log(`Setting product card data-id to: ${product.id} for ${product.name}`);
+                            
+                            productCard.innerHTML = `
+                                <div class="product-image">
+                                    <img src="${imageUrl}" alt="${product.name}" 
+                                         onerror="console.log('Failed to load image:', this.src); this.src='https://via.placeholder.com/500x500?text=${encodeURIComponent(product.name)}';">
+                                    <div class="product-overlay">
+                                        <button class="quick-view-btn" data-product-id="${product.id || ''}">Quick View</button>
+                                    </div>
+                                </div>
+                                <div class="product-details">
+                                    <h3>${product.name}</h3>
+                                    <p class="product-color">${product.category}</p>
+                                    <p class="product-price">EGP ${price}</p>
+                                    <button class="add-to-cart-btn" data-item='${JSON.stringify({
+                                        id: product.id,
+                                        name: product.name,
+                                        price: price,
+                                        image: imageUrl,
+                                        size: "M",
+                                        color: product.category,
+                                        quantity: 1
+                                    })}'>Add to Cart</button>
+                                </div>
+                            `;
                             
                             // Add the product card to the grid
                             productsGrid.appendChild(productCard);
@@ -720,118 +726,32 @@
             categoryFilter.addEventListener('change', filterProducts);
             applyPriceButton.addEventListener('click', filterProducts);
 
-            function openProductPage(productId) {
+            // Fix the openProductPage function to handle both button elements and product IDs
+            function openProductPage(btnOrId) {
+                // Determine if the parameter is a button element or a product ID
+                let productId;
+                
+                if (typeof btnOrId === 'object') {
+                    // It's a button element, get the product ID from the parent card
+                    const productCard = btnOrId.closest('.product-card');
+                    if (productCard) {
+                        productId = productCard.dataset.id;
+                    }
+                } else {
+                    // It's already a product ID
+                    productId = btnOrId;
+                }
+                
                 console.log('Opening product page for ID:', productId);
                 
-                // Find product data by ID with better matching
-                let product = null;
-                
-                // Try different ways to match the product
-                if (productId) {
-                    // Try exact match first
-                    product = products.find(p => String(p.id) === String(productId));
-                    
-                    // If not found, try to find by index
-                    if (!product && !isNaN(parseInt(productId))) {
-                        const index = parseInt(productId);
-                        if (index >= 0 && index < products.length) {
-                            product = products[index];
-                        }
-                    }
+                if (!productId) {
+                    console.error('No product ID found');
+                    alert('Error: Product ID not found');
+                    return;
                 }
                 
-                // If still not found, use first product as fallback
-                if (!product) {
-                    console.warn('Product not found with ID:', productId);
-                    if (products.length > 0) {
-                        console.log('Using first product as fallback');
-                        product = products[0];
-                    } else {
-                        console.error('No products available');
-                        alert('Error: Product not found');
-                        return;
-                    }
-                }
-                
-                console.log('Found product:', product);
-                
-                // Create a data object for this product
-                const itemData = {
-                    id: product.id || '1',
-                    name: product.name || 'Product',
-                    price: product.price || 0,
-                    description: product.description || '',
-                    category: product.category || 'General',
-                    image: null
-                };
-                
-                // Get image source from rendered card (more reliable)
-                const productCards = document.querySelectorAll('.product-card');
-                let cardImage = null;
-                
-                for (const card of productCards) {
-                    if (String(card.dataset.id) === String(product.id)) {
-                        const imgElement = card.querySelector('.product-image img');
-                        if (imgElement && imgElement.src) {
-                            cardImage = imgElement.src;
-                            break;
-                        }
-                    }
-                }
-                
-                // Set the image - prefer card image if found
-                if (cardImage) {
-                    itemData.image = cardImage;
-                }
-                // Next try uploaded image if available
-                else if (product.images && product.images.length > 0 && 
-                    (product.images[0].startsWith('data:') || product.images[0].startsWith('http'))) {
-                    itemData.image = product.images[0];
-                } 
-                // Finally fall back to category-based image
-                else {
-                    const category = product.category ? product.category.toLowerCase() : '';
-                                         if (category === 'apparel' || category.includes('shirt')) {
-                         itemData.image = 'So_photos/Card_1.jpg';
-                     } else if (category.includes('hijab')) {
-                         itemData.image = 'So_photos/Card_2.jpg';
-                         // Ensure consistent naming for hijab products
-                         itemData.name = 'Sports Hijab';
-                         // Set price to 1800 for hijabs as shown in the screenshot
-                         itemData.price = 1800;
-                     } else if (category.includes('athleisure') || category.includes('set')) {
-                         itemData.image = 'So_photos/Card_3.jpg';
-                    } else if (category.includes('training') || category.includes('workout')) {
-                        itemData.image = 'So_photos/Card_4.jpg';
-                    } else if (category.includes('protein') || category.includes('supplement')) {
-                        itemData.image = 'So_photos/Card_5.jpg';
-                    } else if (category.includes('equipment') || category.includes('resistance')) {
-                        itemData.image = 'So_photos/Card_6.jpg';
-                    } else {
-                        const idNum = parseInt(String(product.id).replace(/\D/g, '')) || 1;
-                        itemData.image = `So_photos/Card_${(idNum % 6) + 1}.jpg`;
-                    }
-                }
-                
-                console.log('Product data for detail page:', itemData);
-                
-                try {
-                    // Try to encode the data
-                    const encodedData = encodeURIComponent(JSON.stringify(itemData));
-                    
-                    // Make sure it's not too long
-                    if (encodedData.length > 2000) {
-                        console.warn('Encoded data is very long, removing image data');
-                        itemData.image = 'So_photos/Card_1.jpg'; // Use simple image reference instead
-                        const shorterData = encodeURIComponent(JSON.stringify(itemData));
-                        window.location.href = 'product.html?data=' + shorterData;
-                    } else {
-                        window.location.href = 'product.html?data=' + encodedData;
-                    }
-                } catch (error) {
-                    console.error('Error encoding product data:', error);
-                    alert('Error opening product page. See console for details.');
-                }
+                // Navigate to product page with ID parameter
+                window.location.href = `product.html?id=${productId}`;
             }
         });
     </script>

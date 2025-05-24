@@ -447,7 +447,7 @@
                 </button>
                 <div class="logo">
                     <a href="index.html">
-                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                        <img src="New logo/sohyla ESC.png" alt="ESC Wear Logo" class="header-logo">
                     </a>
                 </div>
             </div>
@@ -476,7 +476,7 @@
         <div class="mobile-menu-header">
             <div class="logo">
                 <a href="index.html">
-                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    <img src="New logo/sohyla ESC.png" alt="ESC Wear Logo" class="header-logo">
                 </a>
             </div>
             <button class="close-menu-btn" aria-label="Close menu">×</button>
@@ -504,14 +504,14 @@
         </div>
         <div class="product-info">
             <div class="product-title-block">
-                <span class="brand-label">Brand: </span><a href="#" id="brandLink" class="brand-link">Example</a>
+                <span class="brand-label">Brand: </span><a href="#" id="brandLink" class="brand-link">ESC Fit Club</a>
                 <div class="product-title" id="productTitle"></div>
             </div>
             <div class="product-desc" id="productDesc"></div>
             <div class="rating-row">
-                <span class="rating" id="rating"></span>
+                <span class="rating" id="rating">★★★★★ 5.0</span>
             </div>
-            <div class="availability" id="availability"></div>
+            <div class="availability" id="availability">In Stock</div>
             <div class="product-price" id="productPrice"></div>
             <div class="product-purchase-info">
                 <div class="purchase-line"><a href="#" class="blue-link">FREE Returns</a></div>
@@ -529,19 +529,10 @@
                         <option value="4">4</option>
                     </select>
                 </div>
-                <div class="quantity-row" style="margin-top: 10px;">
-                    <label for="size" class="quantity-label">Size:</label>
-                    <select id="size" class="quantity-select">
-                        <option value="S">S</option>
-                        <option value="M" selected>M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                    </select>
-                </div>
             </div>
             <div class="product-long-desc" id="productLongDesc"></div>
             <button class="add-to-cart-btn" id="addToCartBtn">Add to Cart</button>
-            <button class="addon-btn" id="toggleCustomizeBtn" onclick="toggleCustomize()">Add On</button>
+            <button class="addon-btn" id="toggleCustomizeBtn">Add On</button>
             <div class="customize-section" id="customizeSection" style="display:none;">
                 <label class="color-label" for="colorPicker">Customize Color:</label>
                 <input type="color" id="colorPicker" class="color-picker" value="#000000">
@@ -556,41 +547,194 @@
             // Initialize shared state
             sharedState.init();
             
-            // Get product data from URL
+            // Get product ID from URL
             const urlParams = new URLSearchParams(window.location.search);
-            const encodedData = urlParams.get('data');
+            const productId = urlParams.get('id');
             
-            console.log('URL params:', window.location.search);
-            console.log('Encoded data from URL:', encodedData);
+            console.log('Product ID from URL:', productId);
             
-            if (!encodedData) {
-                console.error('No product data found in URL');
-                const errorMsg = document.createElement('div');
-                errorMsg.style.textAlign = 'center';
-                errorMsg.style.margin = '20px';
-                errorMsg.style.padding = '20px';
-                errorMsg.style.backgroundColor = '#f8d7da';
-                errorMsg.style.color = '#721c24';
-                errorMsg.style.borderRadius = '5px';
-                errorMsg.innerHTML = `
-                    <h3>Error Loading Product</h3>
-                    <p>No product data was found in the URL.</p>
-                    <p><a href="collections.html" style="color: #721c24; text-decoration: underline;">Return to Collections</a></p>
-                `;
-                document.querySelector('.product-main-container').innerHTML = '';
-                document.querySelector('.product-main-container').appendChild(errorMsg);
+            if (!productId) {
+                showErrorMessage('No product ID found in URL');
                 return;
             }
             
-            try {
-                // Parse product data
-                const productData = JSON.parse(decodeURIComponent(encodedData));
-                console.log('Parsed product data:', productData);
+            // Show loading state
+            const productContainer = document.querySelector('.product-main-container');
+            productContainer.innerHTML = '<div style="text-align: center; padding: 50px;"><p>Loading product details...</p></div>';
+            
+            // Fetch product data from API
+            fetchProductData(productId);
+            
+            function fetchProductData(id) {
+                console.log('Fetching product data for ID:', id);
                 
-                // Display product data
-                displayProductDetails(productData);
-            } catch (error) {
-                console.error('Error parsing product data:', error);
+                // Show detailed debugging information
+                document.querySelector('.product-main-container').innerHTML = `
+                    <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px auto; max-width: 800px;">
+                        <h3>Debug Info - Fetching Product</h3>
+                        <p>Attempting to fetch product ID: ${id}</p>
+                        <p>API URL: http://localhost:5000/api/products/${id}</p>
+                        <p>Status: Loading...</p>
+                    </div>
+                `;
+                
+                // Fetch from API endpoint
+                fetch(`http://localhost:5000/api/products/${id}`)
+                    .then(response => {
+                        console.log('API Response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch product (${response.status})`);
+                        }
+                        return response.json();
+                    })
+                    .then(product => {
+                        console.log('Raw product data from API:', product);
+                        
+                        // Debug: Show raw data on page
+                        document.querySelector('.product-main-container').innerHTML += `
+                            <div style="padding: 20px; background: #e9f7ef; border-radius: 8px; margin: 20px auto; max-width: 800px; overflow: auto; max-height: 300px;">
+                                <h3>Raw Product Data</h3>
+                                <pre>${JSON.stringify(product, null, 2)}</pre>
+                            </div>
+                        `;
+                        
+                        // Ensure product has all required fields
+                        product = validateProductData(product);
+                        
+                        // Display product details
+                        displayProductDetails(product);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching product:', error);
+                        
+                        // Show error on page
+                        document.querySelector('.product-main-container').innerHTML = `
+                            <div style="padding: 20px; background: #f8d7da; border-radius: 8px; margin: 20px auto; max-width: 800px;">
+                                <h3>API Error</h3>
+                                <p>${error.message}</p>
+                                <p>Trying fallback data...</p>
+                            </div>
+                        `;
+                        
+                        // As a fallback, try to load static products
+                        loadStaticProduct(id);
+                    });
+            }
+            
+            function validateProductData(product) {
+                console.log('Validating product data structure');
+                
+                // Log all potential image fields to help diagnose the issue
+                console.log('Possible image fields in product data:');
+                
+                const imageFieldNames = ['image', 'images', 'image_url', 'imageUrl', 'image_path', 'imagePath', 'photo', 'photos', 'thumbnail'];
+                
+                imageFieldNames.forEach(field => {
+                    if (product[field]) {
+                        console.log(`- ${field}:`, product[field]);
+                    }
+                });
+                
+                // Try to find image in various fields
+                let imageFromData = null;
+                
+                // Check for image in common field names
+                for (const field of imageFieldNames) {
+                    if (product[field]) {
+                        if (Array.isArray(product[field]) && product[field].length > 0) {
+                            imageFromData = product[field][0]; // Use first image if it's an array
+                            console.log(`Found image in ${field} array:`, imageFromData);
+                            break;
+                        } else if (typeof product[field] === 'string') {
+                            imageFromData = product[field];
+                            console.log(`Found image in ${field} string:`, imageFromData);
+                            break;
+                        }
+                    }
+                }
+                
+                // Create a copy with defaults for missing properties
+                const validatedProduct = {
+                    id: product.id || '1',
+                    name: product.name || 'Product',
+                    price: product.price || 0,
+                    category: product.category || 'Sportswear',
+                    description: product.description || 'High-quality sportswear designed for maximum comfort and performance.',
+                    image: imageFromData || null,
+                    ...product  // Keep original data too
+                };
+                
+                // Log validation
+                console.log('Validated product data:', validatedProduct);
+                
+                return validatedProduct;
+            }
+            
+            function loadStaticProduct(id) {
+                // Define static products as fallback
+                const staticProducts = [
+                    {
+                        id: "1",
+                        name: "Gym Ready Set",
+                        price: 3750,
+                        category: "Sets",
+                        description: "High-quality sportswear designed for maximum comfort and performance during intense workouts.",
+                        image: "So_photos/Card_1.jpg"
+                    },
+                    {
+                        id: "2",
+                        name: "Sports Hijab",
+                        price: 1800,
+                        category: "Hijabs",
+                        description: "Breathable and comfortable hijab designed specifically for active lifestyles and sports activities.",
+                        image: "So_photos/Card_2.jpg"
+                    },
+                    {
+                        id: "3",
+                        name: "Modest Athleisure Set",
+                        price: 2950,
+                        category: "Athleisure",
+                        description: "Stylish and comfortable athleisure set perfect for both casual outings and light workouts.",
+                        image: "So_photos/Card_3.jpg"
+                    },
+                    {
+                        id: "4",
+                        name: "Premium Training Set",
+                        price: 3500,
+                        category: "Sets",
+                        description: "Advanced training set with moisture-wicking technology for serious athletes.",
+                        image: "So_photos/Card_4.jpg"
+                    },
+                    {
+                        id: "5",
+                        name: "Active Lifestyle Set",
+                        price: 3250,
+                        category: "Sets",
+                        description: "Versatile set designed for active individuals who need comfort throughout their busy day.",
+                        image: "So_photos/Card_5.jpg"
+                    },
+                    {
+                        id: "6",
+                        name: "Performance Hijab",
+                        price: 2200,
+                        category: "Hijabs",
+                        description: "High-performance hijab with advanced cooling technology for intense sporting activities.",
+                        image: "So_photos/Card_6.jpg"
+                    }
+                ];
+                
+                // Find product by ID
+                const product = staticProducts.find(p => p.id === id);
+                
+                if (product) {
+                    console.log('Using static product data:', product);
+                    displayProductDetails(product);
+                } else {
+                    showErrorMessage('Product not found');
+                }
+            }
+            
+            function showErrorMessage(message) {
                 const errorMsg = document.createElement('div');
                 errorMsg.style.textAlign = 'center';
                 errorMsg.style.margin = '20px';
@@ -600,8 +744,7 @@
                 errorMsg.style.borderRadius = '5px';
                 errorMsg.innerHTML = `
                     <h3>Error Loading Product</h3>
-                    <p>There was an error parsing the product data: ${error.message}</p>
-                    <p>Encoded data: ${encodedData ? encodedData.substring(0, 50) + '...' : 'none'}</p>
+                    <p>${message}</p>
                     <p><a href="collections.html" style="color: #721c24; text-decoration: underline;">Return to Collections</a></p>
                 `;
                 document.querySelector('.product-main-container').innerHTML = '';
@@ -610,87 +753,169 @@
             
                         // Function to display product details
             function displayProductDetails(product) {
-                // Display product image
-                const productImage = document.querySelector('.main-image');
-                if (productImage) {
-                    productImage.src = product.image || 'placeholder.jpg';
-                    productImage.alt = product.name;
-                    
-                    // Handle image loading error
-                    productImage.onerror = function() {
-                        console.error('Failed to load product image:', product.image);
-                        this.src = 'https://via.placeholder.com/400x400?text=' + encodeURIComponent(product.name);
-                    };
-                }
+                console.log('Displaying product details with image:', product.image);
                 
-                // Display product title - always use correct casing for Sports Hijab
-                const productTitle = document.querySelector('.product-title');
-                if (productTitle) {
-                    // Check if this is a hijab product and use proper name
-                    if (product.category && product.category.toLowerCase().includes('hijab')) {
-                        productTitle.textContent = 'Sports Hijab';
+                // Handle image path
+                let imageSrc = 'https://via.placeholder.com/400x400?text=' + encodeURIComponent(product.name);
+                let imageSourceType = 'placeholder';
+                
+                // Try to use image from product data if available
+                if (product.image) {
+                    // Check if it's a full URL or relative path
+                    if (product.image.startsWith('http') || product.image.startsWith('data:')) {
+                        imageSrc = product.image;
+                        imageSourceType = 'absolute URL';
+                        console.log('Using image URL directly:', imageSrc);
                     } else {
-                        productTitle.textContent = product.name;
+                        // Assume it's a relative path
+                        imageSrc = product.image;
+                        imageSourceType = 'relative path';
+                        console.log('Using relative image path:', imageSrc);
+                        
+                        // If it might be a server path that doesn't include the domain
+                        if (product.image.startsWith('/')) {
+                            const apiBase = 'http://localhost:5000';
+                            const fullUrl = `${apiBase}${product.image}`;
+                            console.log('Trying with API base URL:', fullUrl);
+                            // We'll try both in the image
+                        }
                     }
-                }
-                
-                // Display product price with correct EGP format
-                const productPrice = document.querySelector('.product-price');
-                if (productPrice) {
-                    // Format price with space between EGP and number
-                    productPrice.textContent = `EGP ${product.price}`;
-                    // Use red color for price
-                    productPrice.style.color = '#b12704';
-                }
-                
-                // Display product description
-                const productDescription = document.querySelector('.product-long-desc');
-                if (productDescription) {
-                    productDescription.textContent = product.description || 'High-quality sportswear designed for maximum comfort and performance.';
-                }
-                
-                // Update product availability text
-                const availability = document.getElementById('availability');
-                if (availability) {
-                    availability.textContent = 'In Stock';
-                    availability.style.color = '#008a00';
-                    availability.style.fontWeight = 'bold';
-                }
-
-                // Update product rating
-            const rating = document.getElementById('rating');
-                if (rating) {
-                    rating.innerHTML = '★★★★★ 5.0';
-                    rating.style.color = '#e6a700';
-                }
-
-                // Update product description/category
-            const productDesc = document.getElementById('productDesc');
-                if (productDesc) {
-                    // Always show Sportswear for hijabs
-                    if (product.category && product.category.toLowerCase().includes('hijab')) {
-                        productDesc.textContent = 'Sportswear';
-        } else {
-                        productDesc.textContent = product.category || 'Sportswear';
+                } else {
+                    // If no image, use category-based fallback
+                    const category = product.category ? product.category.toLowerCase() : '';
+                    if (category.includes('shirt') || category.includes('apparel')) {
+                        imageSrc = 'So_photos/Card_1.jpg';
+                    } else if (category.includes('hijab')) {
+                        imageSrc = 'So_photos/Card_2.jpg';
+                    } else if (category.includes('athleisure') || category.includes('set')) {
+                        imageSrc = 'So_photos/Card_3.jpg';
+                    } else if (category.includes('training') || category.includes('workout')) {
+                        imageSrc = 'So_photos/Card_4.jpg';
+                    } else {
+                        // Default image based on ID
+                        const idNum = parseInt(String(product.id).replace(/\D/g, '')) || 1;
+                        imageSrc = `So_photos/Card_${(idNum % 6) + 1}.jpg`;
                     }
+                    imageSourceType = 'category fallback';
+                    console.log('Using fallback image based on category:', imageSrc);
                 }
                 
-                // Update brand link
-                const brandLink = document.getElementById('brandLink');
-                if (brandLink) {
-                    brandLink.textContent = 'Example';
-                    brandLink.style.color = '#1976d2';
+                // Create detailed error handler for image
+                const imageErrorHandler = `
+                    (function(img) {
+                        console.error('Image failed to load:', img.src);
+                        
+                        // If it's a relative path, try with API base URL
+                        if (!img.src.startsWith('http') && !img.src.startsWith('data:') && !img.src.startsWith('So_photos/')) {
+                            const apiBase = 'http://localhost:5000';
+                            const newSrc = apiBase + (img.src.startsWith('/') ? '' : '/') + img.src;
+                            console.log('Trying with API base URL:', newSrc);
+                            
+                            // Store original for debugging
+                            img.setAttribute('data-original-src', img.src);
+                            
+                            // Try with API base
+                            img.src = newSrc;
+                            return; // Give this a chance before falling back
+                        }
+                        
+                        // If it's from API base and still fails, use placeholder
+                        if (img.src.includes('localhost:5000')) {
+                            console.log('API URL failed, using placeholder');
+                            img.src = 'https://via.placeholder.com/400x400?text=${encodeURIComponent(product.name)}';
+                        }
+                        
+                        // If all else fails
+                        if (!img.src.includes('placeholder')) {
+                            img.src = 'https://via.placeholder.com/400x400?text=${encodeURIComponent(product.name)}';
+                        }
+                    })(this)
+                `;
+                
+                // Reset container
+                const productContainer = document.querySelector('.product-main-container');
+                productContainer.innerHTML = `
+                    <div class="product-gallery">
+                        <img id="productImage" class="main-image" src="${imageSrc}" alt="${product.name}" 
+                             data-source-type="${imageSourceType}" 
+                             onerror="${imageErrorHandler.replace(/"/g, '&quot;')}">
+                        <div class="carousel-dots">
+                            <span class="dot active"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+                            Image source: <span id="imageSourceInfo">${imageSourceType}</span>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title-block">
+                            <span class="brand-label">Brand: </span><a href="#" id="brandLink" class="brand-link">ESC Fit Club</a>
+                            <div class="product-title" id="productTitle">${product.name}</div>
+                        </div>
+                        <div class="product-desc" id="productDesc">${product.category || 'Sportswear'}</div>
+                        <div class="rating-row">
+                            <span class="rating" id="rating">★★★★★ 5.0</span>
+                        </div>
+                        <div class="availability" id="availability">In Stock</div>
+                        <div class="product-price" id="productPrice">EGP ${product.price}</div>
+                        <div class="product-purchase-info">
+                            <div class="purchase-line"><a href="#" class="blue-link">FREE Returns</a></div>
+                            <div class="purchase-line">All prices include VAT.</div>
+                            <div class="purchase-line"><b>Buy with installments and pay EGP 47.06 for 48 months with select banks.</b> <a href="#" class="blue-link">Learn more</a></div>
+                            <div class="purchase-line"><a href="#" class="blue-link">FREE delivery</a> Tomorrow, 7 May to <a href="#" class="blue-link">6Th Of October City</a></div>
+                            <div class="purchase-line">Or fastest delivery <b>Today by 11 PM.</b> Order within <span class="green-text">10 hrs 13 mins</span></div>
+                            <div class="stock-warning">Only 4 left in stock - order soon.</div>
+                            <div class="quantity-row">
+                                <label for="quantity" class="quantity-label">Quantity:</label>
+                                <select id="quantity" class="quantity-select">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="product-long-desc" id="productLongDesc">${product.description || 'High-quality sportswear designed for maximum comfort and performance.'}</div>
+                        <button class="add-to-cart-btn" id="addToCartBtn">Add to Cart</button>
+                        <button class="addon-btn" id="toggleCustomizeBtn">Add On</button>
+                        <div class="customize-section" id="customizeSection" style="display:none;">
+                            <label class="color-label" for="colorPicker">Customize Color:</label>
+                            <input type="color" id="colorPicker" class="color-picker" value="#000000">
+                            <label class="upload-label" for="sampleUpload">Upload Sample for Customization:</label>
+                            <input type="file" id="sampleUpload" class="file-upload" accept="image/*,application/pdf">
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 10px; background: #f1f1f1; border-radius: 5px; display: none;" id="debugPanel">
+                            <h4 style="margin-top: 0;">Debug Information</h4>
+                            <p><strong>Product ID:</strong> ${product.id}</p>
+                            <p><strong>Image Path:</strong> ${imageSrc}</p>
+                            <p><strong>Image Source Type:</strong> ${imageSourceType}</p>
+                            <p><strong>Original API Image:</strong> ${product.image || 'None'}</p>
+                        </div>
+                        
+                        <button onclick="document.getElementById('debugPanel').style.display = document.getElementById('debugPanel').style.display === 'none' ? 'block' : 'none'" 
+                                style="margin-top: 10px; padding: 5px 10px; background: #f1f1f1; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                            Toggle Debug Info
+                        </button>
+                    </div>
+                `;
+                
+                // After rendering, check if image loaded successfully
+                const productImage = document.getElementById('productImage');
+                if (productImage) {
+                    productImage.addEventListener('load', function() {
+                        console.log('Image loaded successfully:', this.src);
+                        document.getElementById('imageSourceInfo').textContent = 
+                            this.getAttribute('data-original-src') ? 
+                            `${imageSourceType} (with API base URL)` : 
+                            imageSourceType;
+                    });
                 }
-
+                
                 // Update document title
-                document.title = `${productTitle.textContent} - ESC Fit Club`;
-                
-                // Update stock warning
-                const stockWarning = document.querySelector('.stock-warning');
-                if (stockWarning) {
-                    stockWarning.textContent = 'Only 4 left in stock - order soon.';
-                    stockWarning.style.color = '#b12704';
-                }
+                document.title = `${product.name} - ESC Fit Club`;
                 
                 // Set up Add to Cart button
                 const addToCartBtn = document.querySelector('.add-to-cart-btn');
@@ -699,10 +924,9 @@
                         // Add product to cart
                         sharedState.addToCart({
                             id: product.id,
-                            name: productTitle.textContent, // Use the displayed title
+                            name: product.name,
                             price: product.price,
-                            image: product.image,
-                            size: document.getElementById('size').value,
+                            image: productImage.src, // Use the actual loaded image source
                             color: product.category,
                             quantity: parseInt(document.getElementById('quantity').value) || 1
                         });

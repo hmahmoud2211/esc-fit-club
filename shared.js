@@ -1,8 +1,34 @@
+// Load configuration
+let apiConfig;
+try {
+    // Try to load the config from config.js
+    if (typeof config !== 'undefined') {
+        apiConfig = config;
+    } else {
+        // Default config if config.js is not loaded
+        apiConfig = {
+            apiUrl: 'http://localhost:5000/api',
+            tokenStorageKey: 'escwear_auth_token',
+            userStorageKey: 'escwear_user',
+            cartStorageKey: 'escwear_cart'
+        };
+    }
+} catch (error) {
+    console.error('Failed to load config:', error);
+    // Fallback configuration
+    apiConfig = {
+        apiUrl: 'http://localhost:5000/api',
+        tokenStorageKey: 'escwear_auth_token',
+        userStorageKey: 'escwear_user',
+        cartStorageKey: 'escwear_cart'
+    };
+}
+
 // Shared state management
 const sharedState = {
     // User authentication state
     isAuthenticated: false,
-    token: localStorage.getItem('token') || null,
+    token: localStorage.getItem(apiConfig.tokenStorageKey) || null,
     user: null,
 
     // Cart state
@@ -12,7 +38,7 @@ const sharedState = {
     init() {
         console.log("Init called, checking auth state");
         // Load user data from localStorage
-        const userData = localStorage.getItem('user');
+        const userData = localStorage.getItem(apiConfig.userStorageKey);
         if (userData) {
             this.user = JSON.parse(userData);
             this.isAuthenticated = true;
@@ -22,7 +48,7 @@ const sharedState = {
         }
 
         // Load cart from localStorage
-        const savedCart = localStorage.getItem('cart');
+        const savedCart = localStorage.getItem(apiConfig.cartStorageKey);
         if (savedCart) {
             this.cart = JSON.parse(savedCart);
         }
@@ -376,7 +402,7 @@ const sharedState = {
     login(userData) {
         this.user = userData;
         this.isAuthenticated = true;
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem(apiConfig.userStorageKey, JSON.stringify(userData));
         this.updateUI();
         
         // Redirect to saved page or home
@@ -390,8 +416,8 @@ const sharedState = {
         // Clear all authentication data
         this.user = null;
         this.isAuthenticated = false;
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        localStorage.removeItem(apiConfig.userStorageKey);
+        localStorage.removeItem(apiConfig.tokenStorageKey);
         localStorage.removeItem('loginRedirect');
         
         // Show logout notification
@@ -448,7 +474,7 @@ const sharedState = {
 
     // Save cart to localStorage
     saveCart() {
-        localStorage.setItem('cart', JSON.stringify(this.cart));
+        localStorage.setItem(apiConfig.cartStorageKey, JSON.stringify(this.cart));
     },
 
     // Update cart display

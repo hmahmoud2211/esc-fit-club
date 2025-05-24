@@ -1,4 +1,29 @@
-// Remove import and use direct fetch calls to Flask backend
+// Load configuration
+let apiConfig;
+try {
+    // Try to load the config from config.js
+    if (typeof config !== 'undefined') {
+        apiConfig = config;
+    } else {
+        // Default config if config.js is not loaded
+        apiConfig = {
+            apiUrl: 'http://localhost:5000/api',
+            tokenStorageKey: 'escwear_auth_token',
+            userStorageKey: 'escwear_user',
+            cartStorageKey: 'escwear_cart'
+        };
+    }
+} catch (error) {
+    console.error('Failed to load config:', error);
+    // Fallback configuration
+    apiConfig = {
+        apiUrl: 'http://localhost:5000/api',
+        tokenStorageKey: 'escwear_auth_token',
+        userStorageKey: 'escwear_user',
+        cartStorageKey: 'escwear_cart'
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -21,14 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Check if user is already logged in and not forcing login
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(apiConfig.tokenStorageKey);
     if (token && !forceLogin) {
         // If coming from checkout, redirect back to checkout
         if (isCheckout) {
             window.location.href = 'checkout.html';
         } else {
             // Check if user is admin to redirect to admin page
-            const userData = localStorage.getItem('user');
+            const userData = localStorage.getItem(apiConfig.userStorageKey);
             if (userData) {
                 const user = JSON.parse(userData);
                 if (user.role === 'admin') {
@@ -51,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const remember = document.getElementById('remember').checked;
 
             try {
-                // Send login request to Node.js backend
-                const response = await fetch('http://localhost:5000/api/auth/login', {
+                // Send login request to backend using API URL from config
+                const response = await fetch(`${apiConfig.apiUrl}/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -66,9 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(data.msg || 'Login failed');
                 }
                 
-                // Store token and user info
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                // Store token and user info using config keys
+                localStorage.setItem(apiConfig.tokenStorageKey, data.token);
+                localStorage.setItem(apiConfig.userStorageKey, JSON.stringify(data.user));
                 
                 // Remember user if checkbox checked
                 if (remember) {
@@ -109,8 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Send register request to Node.js backend
-                const response = await fetch('http://localhost:5000/api/auth/register', {
+                // Send register request to backend using API URL from config
+                const response = await fetch(`${apiConfig.apiUrl}/auth/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node frontend-server.js",
-    "dev": "nodemon frontend-server.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "dev": "nodemon frontend-server.js"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
