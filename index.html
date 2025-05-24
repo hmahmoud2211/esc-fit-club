@@ -18,7 +18,7 @@
                 </button>
                 <div class="logo">
                     <a href="index.html">
-                        <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                        <img src="New logo/sohyla ESC.png" alt="ESC Wear Logo" class="header-logo">
                     </a>
                 </div>
             </div>
@@ -48,7 +48,7 @@
         <div class="mobile-menu-header">
             <div class="logo">
                 <a href="index.html">
-                    <img src="Logo-removebg-preview.png" alt="ESC Wear Logo">
+                    <img src="New logo/sohyla ESC.png" alt="ESC Wear Logo" class="header-logo">
                 </a>
             </div>
             <button class="close-menu-btn" aria-label="Close menu">×</button>
@@ -69,7 +69,7 @@
     <!-- ESC Logo Animation Screen -->
     <div class="animation-screen" id="animationScreen">
         <div class="logo-container">
-            <img src="Logo-removebg-preview.png" alt="ESC Wear Logo" class="esc-logo-animation">
+            <img src="New logo/sohyla ESC.png" alt="ESC Wear Logo" class="esc-logo-animation">
         </div>
         <div class="slogan-text">
             <span class="slogan-word slogan-word-1">Reset</span>
@@ -201,148 +201,76 @@
         </section>
     </main>
 
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
     <script src="shared.js"></script>
     <script>
-        // Add to cart function
+        // Initialize shared state
+        document.addEventListener('DOMContentLoaded', function() {
+            sharedState.init();
+        });
+        
+        // Function to add items to cart
         function addToCart(item) {
             sharedState.addToCart(item);
+            
+            // Show notification
+            sharedState.showNotification(`${item.name} added to your cart!`, {
+                showViewCartButton: true
+            });
         }
-
-        // Mobile menu functionality
-        document.addEventListener('DOMContentLoaded', () => {
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            const closeMenuBtn = document.querySelector('.close-menu-btn');
-            const mobileMenu = document.querySelector('.mobile-menu');
-            const body = document.body;
-
-            // Create overlay element
-            const overlay = document.createElement('div');
-            overlay.className = 'menu-overlay';
-            body.appendChild(overlay);
-
-            function openMenu() {
-                mobileMenu.classList.add('active');
-                overlay.classList.add('active');
-                body.style.overflow = 'hidden';
-            }
-
-            function closeMenu() {
-                mobileMenu.classList.remove('active');
-                overlay.classList.remove('active');
-                body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMenu);
-            closeMenuBtn.addEventListener('click', closeMenu);
-            overlay.addEventListener('click', closeMenu);
-
-            // Close menu when clicking a link
-            const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', closeMenu);
-            });
-        });
-
-        // Search functionality
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchBtn = document.querySelector('.search-btn');
-            const searchOverlay = document.querySelector('.search-overlay');
-            const searchClose = document.querySelector('.search-close');
-            const searchInput = document.querySelector('.search-input');
-            const searchResults = document.querySelector('.search-results');
-
-            function openSearch() {
-                searchOverlay.classList.add('active');
-                setTimeout(() => {
-                    searchInput.focus();
-                }, 100);
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeSearch() {
-                searchOverlay.classList.remove('active');
-                searchInput.value = '';
-                searchResults.innerHTML = '';
-                document.body.style.overflow = '';
-            }
-
-            function performSearch() {
-                const query = searchInput.value.trim().toLowerCase();
-                if (query.length < 2) return;
-
-                // Example products data - you would typically fetch this from your backend
-                const products = [
-                    { name: 'Gym Ready Set', price: '$89.99', image: 'So_photos/so1.jpg' },
-                    { name: 'Sports Hijab', price: '$39.99', image: 'So_photos/so2.jpg' },
-                    { name: 'Modest Athleisure Set', price: '$99.99', image: 'So_photos/So3.jpg' },
-                    { name: 'Premium Training Set', price: '$129.99', image: 'So_photos/So4.jpg' }
-                ];
-
-                const filteredProducts = products.filter(product => 
-                    product.name.toLowerCase().includes(query)
-                );
-
-                displayResults(filteredProducts);
-            }
-
-            function displayResults(results) {
-                if (results.length === 0) {
-                    searchResults.innerHTML = '<p>No products found.</p>';
-                    return;
-                }
-
-                const html = results.map(product => `
-                    <div class="search-result-item">
-                        <img src="${product.image}" alt="${product.name}">
-                        <div class="search-result-info">
-                            <h3>${product.name}</h3>
-                            <p>${product.price}</p>
-                        </div>
-                    </div>
-                `).join('');
-
-                searchResults.innerHTML = html;
-            }
-
-            searchBtn.addEventListener('click', openSearch);
-            searchClose.addEventListener('click', closeSearch);
-            searchInput.addEventListener('input', performSearch);
-
-            // Close search on escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
-                    closeSearch();
-                }
-            });
-        });
-
+        
+        // Function for search
+        function performSearch() {
+            const searchTerm = document.querySelector('.search-input').value.trim().toLowerCase();
+            if (!searchTerm) return;
+            
+            // Redirect to collections page with search parameter
+            window.location.href = `collections.html?search=${encodeURIComponent(searchTerm)}`;
+        }
+        
+        // Animation handling
         document.addEventListener('DOMContentLoaded', function() {
             const animationScreen = document.getElementById('animationScreen');
             const mainContent = document.getElementById('mainContent');
-
-            // Check if we're navigating from within the site (not refresh or direct access)
-            const isInternalNavigation = document.referrer.includes(window.location.host) && 
-                                       !performance.getEntriesByType('navigation')
-                                        .some(nav => nav.type === 'reload');
-
-            if (isInternalNavigation) {
-                // Skip animation if navigating internally
-                animationScreen.style.display = 'none';
-                mainContent.style.display = 'block';
-            } else {
-                // Show animation on refresh, reopen, or direct access
-                animationScreen.style.display = 'flex';
-                mainContent.style.display = 'none';
-                
-                // Hide animation after it completes
-                setTimeout(() => {
-                    animationScreen.style.opacity = '0';
-                    mainContent.style.display = 'block';
-                    setTimeout(() => {
-                        animationScreen.style.display = 'none';
-                    }, 500);
-                }, 3000);
-            }
+            
+            // Show animation for 2 seconds
+            setTimeout(function() {
+                animationScreen.classList.add('fade-out');
+                mainContent.classList.add('fade-in');
+                setTimeout(function() {
+                    animationScreen.style.display = 'none';
+                }, 500);
+            }, 2000);
+            
+            // Handle search toggle
+            const searchBtn = document.querySelector('.search-btn');
+            const searchOverlay = document.querySelector('.search-overlay');
+            const searchClose = document.querySelector('.search-close');
+            
+            searchBtn.addEventListener('click', function() {
+                searchOverlay.classList.add('active');
+                document.querySelector('.search-input').focus();
+            });
+            
+            searchClose.addEventListener('click', function() {
+                searchOverlay.classList.remove('active');
+            });
+            
+            // Mobile menu handling
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const closeMenuBtn = document.querySelector('.close-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
         });
     </script>
 </body>

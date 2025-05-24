@@ -28,8 +28,8 @@
 }
 
 .auth-logo {
-    width: 80px;
-    height: 80px;
+    width: 150px;
+    height: auto;
     margin-bottom: 1rem;
     filter: brightness(0);
 }
@@ -148,6 +148,12 @@
 }
 
 /* Responsive Design */
+@media (max-width: 768px) {
+    .auth-logo {
+        width: 120px;
+    }
+}
+
 @media (max-width: 480px) {
     .auth-box {
         padding: 2rem;
@@ -155,6 +161,10 @@
     
     .auth-header h1 {
         font-size: 1.5rem;
+    }
+    
+    .auth-logo {
+        width: 100px;
     }
     
     .form-options {

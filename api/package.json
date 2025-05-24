@@ -1,0 +1,11 @@
+{
+  "name": "esc-fit-club-serverless",
+  "version": "1.0.0",
+  "description": "Serverless functions for ESC Fit Club",
+  "main": "proxy.js",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "author": "",
+  "license": "MIT"
+} 
